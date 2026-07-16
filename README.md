@@ -22,6 +22,13 @@ It teaches four things on one dashboard:
 - **🚩 Flag hunt** — a flag card appears; he taps the matching country.
 - **⭐ Capital game** — "Paris! Where does Paris live?" — he taps the country.
 - Quiz modes only use countries he has already placed, so they grow with him.
+- **Guess role-play**: tapping a placed country never tells him the answer
+  straight away. It plays a hint ("I look like a boot kicking a football!") and
+  he must recall the name; then the capital, then find-my-flag among three flags.
+  Buttons on the card: 🔊 = one more hint (a "Itaa..." syllable tease), ✅ = the
+  assisting adult taps this when he says the right answer aloud (celebration!),
+  🎁 = reveal. Two misses always end in a happy animated reveal — never a dead end.
+- In quiz modes, two wrong taps light up the correct answer so he learns it.
 - **Zoom**: pinch on phone, mouse-wheel on laptop, or the ➕ / ➖ buttons.
   🗺️ jumps between the whole map and the current level's region. The camera
   also flies to each new level's region automatically. Drag the sea to pan.

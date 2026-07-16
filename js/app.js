@@ -190,6 +190,7 @@ let viewAnim = null;
 
 function applyView() {
   board.setAttribute('viewBox', `${view.x} ${view.y} ${view.w} ${view.h}`);
+  if (typeof rp !== 'undefined' && rp) positionQ();  // ❓ follows the camera
 }
 
 function renderScale() {
@@ -333,6 +334,7 @@ function onChipDown(e, cc, chip) {
   if (state.mode !== 'puzzle') return;
   e.preventDefault();
   audio.unlock();
+  closeRolePlay(true);
   drag = { cc, chip, el: null, startX: e.clientX, startY: e.clientY, moved: false };
   audio.speak(cc + '_name');
   state.lastSpoken = [cc + '_name'];
@@ -591,14 +593,14 @@ function handleBoardTap(e) {
 
   const el = document.elementFromPoint(e.clientX, e.clientY);
   const cc = el && el.dataset ? el.dataset.cc : null;
-  if (!cc || !state.placed.has(cc)) return;
+  if (!cc || !state.placed.has(cc)) {
+    if (rp) closeRolePlay();     // tapped the sea: dismiss the guess card
+    return;
+  }
 
   if (state.mode === 'puzzle') {
-    showBanner(cc);
-    const clips = [cc + '_name', cc + '_capital'];
-    audio.speak(clips);
-    state.lastSpoken = clips;
     flash(cc);
+    openRolePlay(cc);            // guess first — never tell the name straight away
   } else {
     answerQuiz(cc);
   }
@@ -628,6 +630,210 @@ function showBanner(cc) {
   bannerTimer = setTimeout(() => $('banner').classList.add('hidden'), 6000);
 }
 
+/* ================= Guess role-play =================
+   Tap a placed country -> it lifts off the board, the camera swoops in and a
+   3D card asks "Kaun hoon main?" — hints first, answer only after guessing
+   (or after enough misses). Three rounds: name, capital, flag. */
+const gotIt = () => 'got_it_' + (1 + Math.floor(Math.random() * 2));
+let rp = null; // {cc, stage: 'name'|'capital'|'flag', hints, wrong}
+let rpTimer = null;
+
+function openRolePlay(cc) {
+  if (rp && rp.cc === cc) return;
+  closeRolePlay(true);
+  rp = { cc, stage: 'name', hints: 0, wrong: 0 };
+  paths[cc].classList.add('rp-active');
+  $('board-tilt').classList.add('rp');
+  $('banner').classList.add('hidden');
+  $('rp').classList.remove('hidden');
+  setView(fitCcs([cc], 0.9));
+  setStage('name');
+}
+
+function closeRolePlay(silent = false) {
+  clearTimeout(rpTimer);
+  if (!rp) return;
+  paths[rp.cc].classList.remove('rp-active');
+  $('board-tilt').classList.remove('rp');
+  $('rp').classList.add('hidden');
+  rp = null;
+  if (!silent) {
+    audio.stop();
+    if (state.mode === 'puzzle') setView(fitCcs(levelCcs()));
+  }
+}
+
+function positionQ() {
+  if (!rp) return;
+  const pos = slotScreenPos(rp.cc);
+  const q = $('rp-q');
+  q.style.left = (pos.x - 20) + 'px';
+  q.style.top = (pos.y - 74) + 'px';
+}
+
+function rpFlip(toAnswer) {
+  $('rp-inner').classList.toggle('flipped', toAnswer);
+}
+
+function miniShape(cc) {
+  const svg = chipSvg(cc);
+  svg.classList.add('rp-shape');
+  return svg;
+}
+
+function setStage(stage) {
+  if (!rp) return;
+  rp.stage = stage;
+  rp.hints = 0;
+  rp.wrong = 0;
+  rpFlip(false);
+  const cc = rp.cc;
+  const front = $('rp-front');
+  front.innerHTML = '';
+  $('rp-yes').style.display = '';
+
+  if (stage === 'name') {
+    front.appendChild(miniShape(cc));
+    front.insertAdjacentHTML('beforeend', '<div class="rp-big">❓</div>');
+    speakRp(['guess_who', cc + '_hint']);
+  } else if (stage === 'capital') {
+    front.insertAdjacentHTML('beforeend',
+      `<div class="rp-small">${COUNTRIES[cc].name}</div><div class="rp-big">🏛️❓</div>`);
+    speakRp(['guess_cap', cc + '_captease']);
+  } else { // flag
+    $('rp-yes').style.display = 'none';   // the flag itself is the answer button
+    const opts = flagOptions(cc);
+    for (const k of opts) {
+      const b = document.createElement('button');
+      b.className = 'rp-flag';
+      b.innerHTML = `<img src="assets/flags/${k}.svg" alt="">`;
+      b.addEventListener('click', ev => { ev.stopPropagation(); onFlagPick(k, b); });
+      front.appendChild(b);
+    }
+    speakRp(['guess_flag']);
+  }
+}
+
+function speakRp(clips) {
+  audio.speak(clips);
+  state.lastSpoken = clips;
+}
+
+function flagOptions(cc) {
+  const pool = [...state.placed].filter(k => k !== cc);
+  const all = Object.keys(COUNTRIES).filter(k => k !== cc);
+  while (pool.length < 2) {
+    const k = all[Math.floor(Math.random() * all.length)];
+    if (!pool.includes(k)) pool.push(k);
+  }
+  const decoys = pool.sort(() => Math.random() - 0.5).slice(0, 2);
+  return [cc, ...decoys].sort(() => Math.random() - 0.5);
+}
+
+function showAnswerFace(stage, cc) {
+  const back = $('rp-answer');
+  back.innerHTML = '';
+  if (stage === 'name') {
+    back.appendChild(miniShape(cc));
+    back.insertAdjacentHTML('beforeend', `<div class="rp-word">${COUNTRIES[cc].name}</div>`);
+  } else if (stage === 'capital') {
+    back.insertAdjacentHTML('beforeend',
+      `<div class="rp-big">⭐</div><div class="rp-word">${COUNTRIES[cc].capital}</div>`);
+  } else {
+    back.insertAdjacentHTML('beforeend',
+      `<img class="rp-bigflag" src="assets/flags/${cc}.svg" alt="">
+       <div class="rp-word">${COUNTRIES[cc].name}</div>`);
+  }
+  rpFlip(true);
+}
+
+function rpAdvance(delay) {
+  clearTimeout(rpTimer);
+  const t0 = performance.now();
+  const tick = () => {
+    if (!rp) return;
+    // Wait for the minimum delay AND for the voice to finish (max 20s safety).
+    const waited = performance.now() - t0;
+    if ((audio.idle && waited >= delay) || waited > 20000) {
+      if (rp.stage === 'name') setStage('capital');
+      else if (rp.stage === 'capital') setStage('flag');
+      else finishRolePlay();
+    } else {
+      rpTimer = setTimeout(tick, 300);
+    }
+  };
+  rpTimer = setTimeout(tick, delay);
+}
+
+function finishRolePlay() {
+  if (!rp) return;
+  const cc = rp.cc;
+  const pos = slotScreenPos(cc);
+  confetti(pos.x, pos.y, 34);
+  closeRolePlay(true);
+  showBanner(cc);
+  if (state.mode === 'puzzle') setView(fitCcs(levelCcs()));
+}
+
+function rpCorrect() {
+  if (!rp) return;
+  const cc = rp.cc, stage = rp.stage;
+  const pos = slotScreenPos(cc);
+  confetti(pos.x, pos.y);
+  const clips =
+    stage === 'name' ? [gotIt(), cc + '_name', cc + '_cue'] :
+    stage === 'capital' ? [gotIt(), cc + '_capital'] :
+    [gotIt(), cc + '_name'];
+  speakRp(clips);
+  showAnswerFace(stage, cc);
+  rpAdvance(2800);
+}
+
+function rpReveal(auto = false) {
+  if (!rp) return;
+  const cc = rp.cc, stage = rp.stage;
+  let clips;
+  if (stage === 'name') clips = ['reveal', cc + '_name', cc + '_cue'];
+  else if (stage === 'capital') clips = ['reveal', cc + '_capital'];
+  else clips = ['flag_reveal', cc + '_name'];
+  if (auto && stage === 'flag') clips = ['flag_reveal', cc + '_name'];
+  speakRp(clips);
+  showAnswerFace(stage, cc);
+  rpAdvance(stage === 'name' ? 6500 : 3200);
+}
+
+function onFlagPick(k, btn) {
+  if (!rp || rp.stage !== 'flag') return;
+  if (k === rp.cc) {
+    btn.classList.add('right');
+    rpCorrect();
+  } else {
+    btn.classList.add('wrong');
+    setTimeout(() => btn.classList.remove('wrong'), 600);
+    rp.wrong++;
+    if (rp.wrong >= 2) rpReveal(true);
+    else speakRp([tryAgain(), rp.cc + '_flaghint']);
+  }
+}
+
+$('rp-hint').addEventListener('click', () => {
+  if (!rp) return;
+  audio.unlock();
+  const cc = rp.cc;
+  if (rp.stage === 'flag') { speakRp([cc + '_flaghint']); return; }
+  rp.hints++;
+  if (rp.hints === 1) {
+    speakRp(rp.stage === 'name'
+      ? ['one_more_hint', cc + '_tease']
+      : ['one_more_hint', cc + '_captease']);
+  } else {
+    rpReveal(true);   // enough misses — gamified reveal
+  }
+});
+$('rp-yes').addEventListener('click', () => { audio.unlock(); rpCorrect(); });
+$('rp-reveal').addEventListener('click', () => { audio.unlock(); rpReveal(); });
+$('rp-close').addEventListener('click', () => closeRolePlay());
+
 /* ================= Quiz modes ================= */
 function setMode(mode) {
   if (mode !== 'puzzle' && state.placed.size < 1) {
@@ -635,8 +841,10 @@ function setMode(mode) {
     audio.speak('mode_puzzle');
     mode = 'puzzle';
   }
+  closeRolePlay(true);
   state.mode = mode;
   state.quizTarget = null;
+  state.quizWrong = 0;
   state.selectedChip = null;
   document.querySelectorAll('.mode-btn[data-mode]').forEach(b =>
     b.classList.toggle('active', b.dataset.mode === mode));
@@ -664,6 +872,7 @@ function nextQuiz() {
   do { cc = pool[Math.floor(Math.random() * pool.length)]; }
   while (pool.length > 1 && cc === state.quizTarget);
   state.quizTarget = cc;
+  state.quizWrong = 0;
 
   const card = $('quiz-card');
   card.classList.remove('hidden');
@@ -694,12 +903,32 @@ function answerQuiz(cc) {
     audio.speak(clips);
     state.lastSpoken = clips;
     state.quizTarget = null;
+    state.quizWrong = 0;
     setTimeout(nextQuiz, 3400);
   } else {
     const p = paths[cc];
     p.classList.add('wiggle');
     setTimeout(() => p.classList.remove('wiggle'), 550);
-    audio.speak([cc + '_name', tryAgain()]);
+    state.quizWrong = (state.quizWrong || 0) + 1;
+    if (state.quizWrong >= 2) {
+      // Wrong twice: light up the answer so he always ends on success.
+      const t = state.quizTarget;
+      state.quizTarget = null;
+      state.quizWrong = 0;
+      const pt = paths[t];
+      pt.classList.add('reveal-glow');
+      setTimeout(() => pt.classList.remove('reveal-glow'), 2600);
+      const pos = slotScreenPos(t);
+      confetti(pos.x, pos.y, 18);
+      showBanner(t);
+      const clips = state.mode === 'flags'
+        ? ['quiz_reveal', t + '_name']
+        : ['quiz_reveal', t + '_capital', t + '_name'];
+      speakRp(clips);
+      setTimeout(nextQuiz, 4200);
+    } else {
+      audio.speak([cc + '_name', tryAgain()]);
+    }
   }
 }
 

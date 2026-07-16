@@ -223,6 +223,249 @@ export const LEVELS = [
   { name: 'The Balkan Buddies', ccs: ['sk', 'si', 'ba', 'me', 'al', 'mk', 'xk'] },
 ];
 
+// Guess-game content. Per country:
+//   hint     — the memory cue WITHOUT the country name (child must recall it)
+//   tease    — first-syllable teaser for the name
+//   capTease — first-syllable teaser for the capital
+//   flagHint — describes the flag's colours/shapes (for the find-my-flag round)
+// Audio: {cc}_hint, {cc}_tease, {cc}_captease, {cc}_flaghint
+export const GUESS = {
+  it: {
+    hint: "I look like a big boot kicking a football! Pizza and pasta come from me. My name sounds like Titli!",
+    tease: "My name starts with, Itaa... Itaa...",
+    capTease: "My capital city starts with, Roh... Roh...",
+    flagHint: "Green, white and red standing stripes — pizza colours!",
+  },
+  fr: {
+    hint: "The tall tall Eiffel Tower stands in me — so high it touches the clouds! And flaky croissants, nom nom!",
+    tease: "My name starts with, Fraa... Fraa...",
+    capTease: "My capital city starts with, Paa... Paa...",
+    flagHint: "Blue, white and red standing stripes!",
+  },
+  es: {
+    hint: "In me, people throw tomatoes at each other for fun! Splat splat splat!",
+    tease: "My name starts with, Spaa... Spaa...",
+    capTease: "My capital city starts with, Maa... Maa...",
+    flagHint: "Red, yellow, red — sunshine sleeping stripes!",
+  },
+  pt: {
+    hint: "Ronaldo plays football for me! Goal! Siuuu!",
+    tease: "My name starts with, Por... Por...",
+    capTease: "My capital city starts with, Liss... Liss...",
+    flagHint: "Green and red, with a little round shield!",
+  },
+  ch: {
+    hint: "I have snowy snowy mountains and the yummiest chocolate in the world!",
+    tease: "My name starts with, Swit... Swit...",
+    capTease: "My capital city starts with, Ber... Ber...",
+    flagHint: "Red with a white plus sign, like a doctor's flag!",
+  },
+  gb: {
+    hint: "London Bridge is falling down in me! And my big clock goes dong, dong, dong!",
+    tease: "My name starts with, Yoo... Yoo Kay...",
+    capTease: "My capital city starts with, Lon... Lon...",
+    flagHint: "Red, white and blue crosses, criss cross!",
+  },
+  ie: {
+    hint: "Everything in me is green green green — like one big garden!",
+    tease: "My name starts with, Ire... Ire...",
+    capTease: "My capital city starts with, Dub... Dub...",
+    flagHint: "Green, white and orange standing stripes — like India's colours standing up!",
+  },
+  is: {
+    hint: "Brrr, I am so cold! Land of ice and fire — my volcanoes go boom!",
+    tease: "My name starts with, Ice... Ice...",
+    capTease: "My capital city starts with, Rey... Rey...",
+    flagHint: "Blue with a red and white cross!",
+  },
+  nl: {
+    hint: "My windmills go round and round and round, and tulip flowers smile everywhere!",
+    tease: "My name starts with, Neh... Nether...",
+    capTease: "My capital city starts with, Am... Am...",
+    flagHint: "Red, white and blue sleeping stripes!",
+  },
+  be: {
+    hint: "Waffles and chocolates come from me! Nom nom nom!",
+    tease: "My name starts with, Bel... Bel...",
+    capTease: "My capital city starts with, Bruh... Bruh...",
+    flagHint: "Black, yellow and red standing stripes!",
+  },
+  de: {
+    hint: "Vroom vroom! Fast fast cars are made in me — zoom, off they go!",
+    tease: "My name starts with, Jer... Jer...",
+    capTease: "My capital city starts with, Ber... Ber...",
+    flagHint: "Black, red and yellow sleeping stripes!",
+  },
+  at: {
+    hint: "La la la! I am the land of music — even my mountains sing and dance!",
+    tease: "My name starts with, Aus... Aus...",
+    capTease: "My capital city starts with, Vee... Vee...",
+    flagHint: "Red, white, red sleeping stripes!",
+  },
+  cz: {
+    hint: "My name sounds so funny — like check check! Checking checking, check check!",
+    tease: "My name starts with, Che... Che...",
+    capTease: "My capital city starts with, Praa... Praa...",
+    flagHint: "A blue triangle with white and red!",
+  },
+  pl: {
+    hint: "Yummy dumplings called pierogi live in me — little potato pockets, just like momos!",
+    tease: "My name starts with, Poh... Poh...",
+    capTease: "My capital city starts with, War... War...",
+    flagHint: "White on top, red below — two sleeping stripes!",
+  },
+  lu: {
+    hint: "I am tiny tiny, but so rich — a little treasure box country!",
+    tease: "My name starts with, Lux... Lux...",
+    capTease: "My capital city starts with, Lux... Lux...",
+    flagHint: "Red, white and light blue sleeping stripes!",
+  },
+  dk: {
+    hint: "LEGO blocks come from me! Build build build — a tower up to the sky!",
+    tease: "My name starts with, Den... Den...",
+    capTease: "My capital city starts with, Koh... Koh...",
+    flagHint: "Red with a white cross lying on its side!",
+  },
+  no: {
+    hint: "Reindeer live in me, and magic green lights dance in my night sky!",
+    tease: "My name starts with, Nor... Nor...",
+    capTease: "My capital city starts with, Oss... Oss...",
+    flagHint: "Red with a blue and white cross!",
+  },
+  se: {
+    hint: "Yummy meatballs! And IKEA — where whole cupboards come packed in flat boxes!",
+    tease: "My name starts with, Swee... Swee...",
+    capTease: "My capital city starts with, Stok... Stok...",
+    flagHint: "Blue with a yellow cross!",
+  },
+  fi: {
+    hint: "Shhh… Santa Claus lives in me! Ho ho ho!",
+    tease: "My name starts with, Fin... Fin...",
+    capTease: "My capital city starts with, Hel... Hel...",
+    flagHint: "White with a blue cross!",
+  },
+  ee: {
+    hint: "I am a little country that loves computers and robots! Beep beep boop!",
+    tease: "My name starts with, Es... Es...",
+    capTease: "My capital city starts with, Tal... Tal...",
+    flagHint: "Blue, black and white sleeping stripes!",
+  },
+  lv: {
+    hint: "I am full of forests — trees, trees, everywhere trees!",
+    tease: "My name starts with, Lat... Lat...",
+    capTease: "My capital city starts with, Ree... Ree...",
+    flagHint: "Dark red with a thin white line in the middle!",
+  },
+  lt: {
+    hint: "Everyone in me loves basketball! Dribble dribble, jump — dunk!",
+    tease: "My name starts with, Lith... Lith...",
+    capTease: "My capital city starts with, Vil... Vil...",
+    flagHint: "Yellow, green and red sleeping stripes!",
+  },
+  by: {
+    hint: "I have big green forests where bison live — big woolly buffaloes with grumpy faces!",
+    tease: "My name starts with, Bela... Bela...",
+    capTease: "My capital city starts with, Min... Min...",
+    flagHint: "Red and green, with a pretty pattern on the side!",
+  },
+  ua: {
+    hint: "I have fields and fields of yellow sunflowers, all smiling at the sun!",
+    tease: "My name starts with, Yoo... Yoo...",
+    capTease: "My capital city starts with, Kee... Kee...",
+    flagHint: "Blue sky on top, yellow field below!",
+  },
+  ru: {
+    hint: "I am the biggest country in the whole wide world! Matryoshka dolls live in me — a doll inside a doll inside a doll!",
+    tease: "My name starts with, Ruh... Ruh...",
+    capTease: "My capital city starts with, Mos... Mos...",
+    flagHint: "White, blue and red sleeping stripes!",
+  },
+  md: {
+    hint: "Sweet sweet grapes grow in me — angoor! So many angoor!",
+    tease: "My name starts with, Mol... Mol...",
+    capTease: "My capital city starts with, Kishi... Kishi...",
+    flagHint: "Blue, yellow and red, with an eagle in the middle!",
+  },
+  hu: {
+    hint: "My name sounds just like your tummy talking — are you hungry? Hee hee! I eat yummy red goulash soup!",
+    tease: "My name starts with, Hun... Hun...",
+    capTease: "My capital city starts with, Buda... Buda...",
+    flagHint: "Red, white and green sleeping stripes!",
+  },
+  ro: {
+    hint: "Big fairy-tale castles sit on my hills — just like in storybooks!",
+    tease: "My name starts with, Roh... Roh...",
+    capTease: "My capital city starts with, Buku... Buku...",
+    flagHint: "Blue, yellow and red standing stripes!",
+  },
+  bg: {
+    hint: "I am the valley of roses! Pink pink flowers everywhere — what a lovely smell!",
+    tease: "My name starts with, Bul... Bul...",
+    capTease: "My capital city starts with, So... So...",
+    flagHint: "White, green and red sleeping stripes!",
+  },
+  gr: {
+    hint: "I am very very old! Blue blue sea, little white houses, and creamy yogurt!",
+    tease: "My name starts with, Gree... Gree...",
+    capTease: "My capital city starts with, Ath... Ath...",
+    flagHint: "Blue and white stripes like the sea, with a white cross!",
+  },
+  hr: {
+    hint: "Dalmatian doggies with black spots come from me — woof woof!",
+    tease: "My name starts with, Kro... Kro...",
+    capTease: "My capital city starts with, Zag... Zag...",
+    flagHint: "Red, white and blue, with a little checkerboard!",
+  },
+  rs: {
+    hint: "I am the raspberry country! Little red berries — so sweet, so juicy!",
+    tease: "My name starts with, Ser... Ser...",
+    capTease: "My capital city starts with, Bel... Bel...",
+    flagHint: "Red, blue and white, with an eagle!",
+  },
+  sk: {
+    hint: "My mountains are full of castles — a castle on every hill!",
+    tease: "My name starts with, Slo... Slovaa...",
+    capTease: "My capital city starts with, Braa... Braa...",
+    flagHint: "White, blue and red, with a double cross!",
+  },
+  si: {
+    hint: "There is LOVE hiding inside my name! And I have a pretty lake with a tiny island!",
+    tease: "My name starts with, Slo... Slovee...",
+    capTease: "My capital city starts with, Lyoo... Lyoo...",
+    flagHint: "White, blue and red, with a little mountain picture!",
+  },
+  ba: {
+    hint: "I have old old bridges where brave people jump — splash! — into the river!",
+    tease: "My name starts with, Bos... Bos...",
+    capTease: "My capital city starts with, Sara... Sara...",
+    flagHint: "Blue with a yellow triangle and little stars!",
+  },
+  me: {
+    hint: "My name means Black Mountain! A country named after a big black mountain!",
+    tease: "My name starts with, Mon... Monte...",
+    capTease: "My capital city starts with, Pod... Pod...",
+    flagHint: "Red with gold edges and an eagle!",
+  },
+  al: {
+    hint: "I am the land of eagles — big big birds flying high high in the sky!",
+    tease: "My name starts with, Al... Al...",
+    capTease: "My capital city starts with, Tee... Tee...",
+    flagHint: "Red with a black eagle that has two heads!",
+  },
+  mk: {
+    hint: "Statues everywhere in me! Statue statue! Nobody move — statue!",
+    tease: "My name starts with, Mase... Mase...",
+    capTease: "My capital city starts with, Sko... Sko...",
+    flagHint: "A big yellow sun with rays shining out!",
+  },
+  xk: {
+    hint: "I am a baby country — one of the newest countries in the whole world! Goo goo ga ga!",
+    tease: "My name starts with, Koh... Koh...",
+    capTease: "My capital city starts with, Prish... Prish...",
+    flagHint: "Blue with a yellow map and white stars!",
+  },
+};
+
 // Generic UI audio clips (file name -> spoken text). Generated by tools/gen-audio.py.
 export const UI_AUDIO = {
   welcome: "Namaste! Welcome to your world of maps! Chalo, let's play!",
@@ -239,4 +482,14 @@ export const UI_AUDIO = {
   level_done: "Hooray! Level complete! Clap clap clap!",
   all_done: "Wow! You finished the whole map of Europe! You are a champion!",
   flag_prompt: "Look at this flag! Which country does it belong to? Tap it!",
+  // --- Guess role-play ---
+  guess_who: "Guess guess! Kaun hoon main? Who am I?",
+  guess_cap: "Ab bolo — what is my capital city? Guess guess!",
+  guess_flag: "Now find my flag! Kaun sa jhanda mera hai? Tap it!",
+  got_it_1: "Yes yes yes! You knew it! Shabash!",
+  got_it_2: "Correct! What a smart baccha!",
+  reveal: "Okay okay, I will tell you! Dekho...",
+  one_more_hint: "Ek aur hint! Listen carefully...",
+  flag_reveal: "Yeh raha! This one is my flag! Look at it nicely!",
+  quiz_reveal: "Koi baat nahi! Here is the answer — dekho, it lights up!",
 };
