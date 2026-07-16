@@ -84,6 +84,7 @@
         <button id="rp-hint" aria-label="Hint">🔊</button>
         <button id="rp-yes" aria-label="He said it!">✅</button>
         <button id="rp-reveal" aria-label="Reveal">🎁</button>
+        <button id="rp-next" aria-label="Next round">⏭️</button>
         <button id="rp-close" aria-label="Close">✖</button>
       </div>
     </div>
@@ -91,6 +92,29 @@
 
   <!-- Confetti layer + floating drag piece live here -->
   <div id="fx-layer"></div>
+
+  <!-- Phase picker: jump to / skip / replay any set of countries -->
+  <div id="phases" class="hidden">
+    <div id="phase-card">
+      <div id="phase-title">🗺️ Phases</div>
+      <div id="phase-grid"></div>
+      <div id="phase-actions">
+        <button id="btn-restart-all">🔄 <span>Restart all</span></button>
+        <button id="btn-phases-close">✖</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Start screen: continue where we left off, or start fresh -->
+  <div id="start-screen">
+    <div id="start-card">
+      <div id="start-logo">🌍</div>
+      <h1>Atharva's World</h1>
+      <div id="start-sub">Europe</div>
+      <button id="btn-continue" class="start-btn">▶️ <span>Play</span></button>
+      <button id="btn-startover" class="start-btn secondary hidden">🔄 <span>Start from beginning</span></button>
+    </div>
+  </div>
 
   <!-- Shown when another window/tab of the app takes over the sound -->
   <div id="curtain" class="hidden">

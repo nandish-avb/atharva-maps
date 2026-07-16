@@ -488,25 +488,32 @@ function placePiece(cc, chip) {
   }
 }
 
+let celebTimer = null;
 function levelComplete() {
   const isLast = state.level >= LEVELS.length - 1;
   $('celebrate').classList.remove('hidden');
   bigConfetti();
   audio.speak(isLast ? 'all_done' : 'level_done');
-  setTimeout(() => {
-    $('celebrate').classList.add('hidden');
-    if (!isLast) {
-      state.level++;
-      save();
-      refreshBoard();
-      buildTray();
-      updateLevelDots();
-      setView(fitCcs(levelCcs()));
-    } else {
-      setView(FULL);
-    }
-  }, isLast ? 4200 : 2600);
+  clearTimeout(celebTimer);
+  celebTimer = setTimeout(endCelebrate, isLast ? 4200 : 2600);
 }
+function endCelebrate() {
+  if ($('celebrate').classList.contains('hidden')) return;
+  clearTimeout(celebTimer);
+  $('celebrate').classList.add('hidden');
+  if (state.level < LEVELS.length - 1) {
+    state.level++;
+    save();
+    refreshBoard();
+    buildTray();
+    updateLevelDots();
+    setView(fitCcs(levelCcs()));
+  } else {
+    setView(FULL);
+  }
+}
+// A tap skips the celebration — adults can push the pace.
+$('celebrate').addEventListener('pointerdown', endCelebrate);
 
 /* ================= Board gestures: pan / pinch / tap =================
    One pointer: tap (country info, tap-to-place) or pan when it moves.
@@ -645,6 +652,7 @@ function showBanner(cc) {
   clearTimeout(bannerTimer);
   bannerTimer = setTimeout(() => $('banner').classList.add('hidden'), 6000);
 }
+$('banner').addEventListener('click', () => $('banner').classList.add('hidden'));
 
 /* ================= Guess role-play =================
    Tap a placed country -> it lifts off the board, the camera swoops in and a
@@ -850,6 +858,16 @@ $('rp-hint').addEventListener('click', () => {
 });
 $('rp-yes').addEventListener('click', () => { audio.unlock(); rpCorrect(); });
 $('rp-reveal').addEventListener('click', () => { audio.unlock(); rpReveal(); });
+$('rp-next').addEventListener('click', () => {
+  // Speed control: jump straight to the next round, no waiting.
+  if (!rp) return;
+  audio.unlock();
+  clearTimeout(rpTimer);
+  audio.stop();
+  if (rp.stage === 'name') setStage('capital');
+  else if (rp.stage === 'capital') setStage('flag');
+  else finishRolePlay();
+});
 $('rp-close').addEventListener('click', () => closeRolePlay());
 
 /* ================= Quiz modes ================= */
@@ -989,9 +1007,10 @@ function bigConfetti() {
 function updateLevelDots() {
   const wrap = $('level-dots');
   wrap.innerHTML = '';
-  LEVELS.forEach((_, i) => {
+  LEVELS.forEach((l, i) => {
     const d = document.createElement('div');
-    d.className = 'dot' + (i < state.level ? ' done' : i === state.level ? ' now' : '');
+    const done = l.ccs.every(c => state.placed.has(c));
+    d.className = 'dot' + (done ? ' done' : '') + (i === state.level ? ' now' : '');
     wrap.appendChild(d);
   });
 }
@@ -1011,12 +1030,87 @@ $('btn-labels').addEventListener('click', () => {
   refreshBoard();
 });
 
-$('btn-gear').addEventListener('click', () => {
-  if (confirm('Reset all progress? (Sab kuch phir se shuru?)')) {
-    localStorage.removeItem(SAVE_KEY);
-    location.reload();
+/* ================= Phases (jump / skip / replay any level) ================= */
+function resetProgress() {
+  state.placed = new Set();
+  state.level = 0;
+  state.fails = {};
+  state.selectedChip = null;
+  save();
+  refreshBoard();
+  buildTray();
+  updateLevelDots();
+}
+
+function buildPhases() {
+  const grid = $('phase-grid');
+  grid.innerHTML = '';
+  LEVELS.forEach((l, i) => {
+    const done = l.ccs.every(c => state.placed.has(c));
+    const count = l.ccs.filter(c => state.placed.has(c)).length;
+    const b = document.createElement('button');
+    b.className = 'phase' + (done ? ' done' : '') + (i === state.level ? ' now' : '');
+    b.innerHTML =
+      `<div class="ph-emoji">${l.emoji}</div><div class="ph-num">${i + 1}</div>` +
+      `<div class="ph-name">${l.name}</div>` +
+      `<div class="ph-prog">${done ? '⭐' : count + '/' + l.ccs.length}</div>`;
+    b.addEventListener('click', () => selectPhase(i));
+    grid.appendChild(b);
+  });
+}
+
+function openPhases() {
+  buildPhases();
+  $('phases').classList.remove('hidden');
+  audio.speak('pick_phase');
+}
+function closePhases() {
+  $('phases').classList.add('hidden');
+  disarmRestart();
+}
+
+function selectPhase(i) {
+  closePhases();
+  closeRolePlay(true);
+  state.level = i;
+  save();
+  if (state.mode !== 'puzzle') setMode('puzzle');
+  refreshBoard();
+  buildTray();
+  updateLevelDots();
+  setView(fitCcs(levelCcs()));
+  audio.speak(['level_' + (i + 1)]);
+  state.lastSpoken = ['level_' + (i + 1)];
+}
+
+// Restart needs two taps within 3.5s so little fingers can't wipe progress.
+let restartArmed = null;
+function disarmRestart() {
+  clearTimeout(restartArmed);
+  restartArmed = null;
+  const b = $('btn-restart-all');
+  b.classList.remove('armed');
+  b.querySelector('span').textContent = 'Restart all';
+}
+$('btn-restart-all').addEventListener('click', () => {
+  if (!restartArmed) {
+    const b = $('btn-restart-all');
+    b.classList.add('armed');
+    b.querySelector('span').textContent = 'Tap again to erase!';
+    restartArmed = setTimeout(disarmRestart, 3500);
+  } else {
+    disarmRestart();
+    closePhases();
+    resetProgress();
+    audio.speak('fresh_start');
+    state.lastSpoken = ['fresh_start'];
+    setView(fitCcs(levelCcs()));
   }
 });
+$('btn-phases-close').addEventListener('click', closePhases);
+
+$('btn-gear').addEventListener('click', () => { audio.unlock(); openPhases(); });
+$('level-dots').addEventListener('click', () => { audio.unlock(); openPhases(); });
 
 $('zoom-in').addEventListener('click', () => {
   const c = boardCenter(); zoomAt(c.x, c.y, 1.4);
@@ -1043,13 +1137,24 @@ setView(fitCcs(levelCcs()), false);
 document.body.classList.add('booted');
 claimPlayback();
 
-let welcomed = false;
-window.addEventListener('pointerdown', () => {
+window.addEventListener('pointerdown', () => audio.unlock());
+
+/* Start screen: continue where we left off, or start from the beginning. */
+const hasProgress = state.placed.size > 0 || state.level > 0;
+if (hasProgress) {
+  $('btn-continue').querySelector('span').textContent = 'Continue';
+  $('btn-startover').classList.remove('hidden');
+}
+
+function startGame(fresh) {
   audio.unlock();
-  if (!welcomed) {
-    welcomed = true;
-    // Don't cut off a name that is already being spoken by this same tap.
-    audio.speak('welcome', { interrupt: audio.idle });
-    if (!state.lastSpoken) state.lastSpoken = ['welcome'];
-  }
-});
+  claimPlayback();
+  if (fresh) resetProgress();
+  $('start-screen').classList.add('hidden');
+  const clip = fresh ? 'fresh_start' : (hasProgress ? 'welcome_back' : 'welcome');
+  audio.speak(clip);
+  state.lastSpoken = [clip];
+  setView(fitCcs(levelCcs()));
+}
+$('btn-continue').addEventListener('click', () => startGame(false));
+$('btn-startover').addEventListener('click', () => startGame(true));

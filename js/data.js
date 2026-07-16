@@ -214,13 +214,13 @@ export const COUNTRIES = {
 };
 
 export const LEVELS = [
-  { name: 'The Famous Five', ccs: ['it', 'fr', 'es', 'pt', 'ch'] },
-  { name: 'Islands & Low Lands', ccs: ['gb', 'ie', 'is', 'nl', 'be'] },
-  { name: 'The Middle Friends', ccs: ['de', 'at', 'cz', 'pl', 'lu'] },
-  { name: 'The Snowy North', ccs: ['dk', 'no', 'se', 'fi', 'ee'] },
-  { name: 'The Big East', ccs: ['lv', 'lt', 'by', 'ua', 'ru', 'md'] },
-  { name: 'The Sunny South-East', ccs: ['hu', 'ro', 'bg', 'gr', 'hr', 'rs'] },
-  { name: 'The Balkan Buddies', ccs: ['sk', 'si', 'ba', 'me', 'al', 'mk', 'xk'] },
+  { name: 'The Famous Five', emoji: '🍕', ccs: ['it', 'fr', 'es', 'pt', 'ch'] },
+  { name: 'Islands & Low Lands', emoji: '💂', ccs: ['gb', 'ie', 'is', 'nl', 'be'] },
+  { name: 'The Middle Friends', emoji: '🚗', ccs: ['de', 'at', 'cz', 'pl', 'lu'] },
+  { name: 'The Snowy North', emoji: '🎅', ccs: ['dk', 'no', 'se', 'fi', 'ee'] },
+  { name: 'The Big East', emoji: '🌻', ccs: ['lv', 'lt', 'by', 'ua', 'ru', 'md'] },
+  { name: 'The Sunny South-East', emoji: '🌹', ccs: ['hu', 'ro', 'bg', 'gr', 'hr', 'rs'] },
+  { name: 'The Balkan Buddies', emoji: '🦅', ccs: ['sk', 'si', 'ba', 'me', 'al', 'mk', 'xk'] },
 ];
 
 // Guess-game content. Per country:
@@ -492,4 +492,8 @@ export const UI_AUDIO = {
   one_more_hint: "Ek aur hint! Listen carefully...",
   flag_reveal: "Yeh raha! This one is my flag! Look at it nicely!",
   quiz_reveal: "Koi baat nahi! Here is the answer — dekho, it lights up!",
+  // --- Start screen & phases ---
+  welcome_back: "Welcome back! Wapas aa gaye! Let's continue our map!",
+  fresh_start: "Naya game! A fresh new map — let's start from the beginning!",
+  pick_phase: "Which set shall we play? Choose one!",
 };

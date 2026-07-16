@@ -1,6 +1,6 @@
 // Dumps every audio clip (filename -> spoken text) as JSON for gen-audio.py.
 // Run: node tools/make-manifest.mjs > tools/audio-manifest.json
-import { COUNTRIES, UI_AUDIO, GUESS } from '../js/data.js';
+import { COUNTRIES, UI_AUDIO, GUESS, LEVELS } from '../js/data.js';
 
 const clips = {};
 for (const [cc, c] of Object.entries(COUNTRIES)) {
@@ -14,5 +14,9 @@ for (const [cc, c] of Object.entries(COUNTRIES)) {
   clips[cc + '_captease'] = g.capTease;
   clips[cc + '_flaghint'] = g.flagHint;
 }
+const WORDS = ['one', 'two', 'three', 'four', 'five', 'six', 'seven'];
+LEVELS.forEach((l, i) => {
+  clips['level_' + (i + 1)] = `Level ${WORDS[i]}! ${l.name}!`;
+});
 Object.assign(clips, UI_AUDIO);
 process.stdout.write(JSON.stringify(clips, null, 1));

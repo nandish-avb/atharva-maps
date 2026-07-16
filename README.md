@@ -29,6 +29,14 @@ It teaches four things on one dashboard:
   assisting adult taps this when he says the right answer aloud (celebration!),
   🎁 = reveal. Two misses always end in a happy animated reveal — never a dead end.
 - In quiz modes, two wrong taps light up the correct answer so he learns it.
+- **Start screen**: every launch asks — ▶️ Continue from where you left off, or
+  🔄 Start from the beginning.
+- **Phases**: tap ⚙️ (or the progress dots) to open the phase picker — 7 sets
+  of countries with progress shown. Jump to, skip, or replay any phase freely.
+  The 🔄 Restart-all button inside needs two taps, so small fingers can't
+  wipe progress by accident.
+- **Speed controls**: ⏭️ on the guess card jumps to the next round instantly;
+  tapping the level celebration or the info banner dismisses them.
 - **Zoom**: pinch on phone, mouse-wheel on laptop, or the ➕ / ➖ buttons.
   🗺️ jumps between the whole map and the current level's region. The camera
   also flies to each new level's region automatically. Drag the sea to pan.

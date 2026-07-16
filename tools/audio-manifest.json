@@ -311,6 +311,13 @@
  "xk_tease": "My name starts with, Koh... Koh...",
  "xk_captease": "My capital city starts with, Prish... Prish...",
  "xk_flaghint": "Blue with a yellow map and white stars!",
+ "level_1": "Level one! The Famous Five!",
+ "level_2": "Level two! Islands & Low Lands!",
+ "level_3": "Level three! The Middle Friends!",
+ "level_4": "Level four! The Snowy North!",
+ "level_5": "Level five! The Big East!",
+ "level_6": "Level six! The Sunny South-East!",
+ "level_7": "Level seven! The Balkan Buddies!",
  "welcome": "Namaste! Welcome to your world of maps! Chalo, let's play!",
  "mode_puzzle": "Puzzle time! Drag each country to its home on the map!",
  "mode_flags": "Flag hunt! Look at the flag and tap its country!",
@@ -333,5 +340,8 @@
  "reveal": "Okay okay, I will tell you! Dekho...",
  "one_more_hint": "Ek aur hint! Listen carefully...",
  "flag_reveal": "Yeh raha! This one is my flag! Look at it nicely!",
- "quiz_reveal": "Koi baat nahi! Here is the answer — dekho, it lights up!"
+ "quiz_reveal": "Koi baat nahi! Here is the answer — dekho, it lights up!",
+ "welcome_back": "Welcome back! Wapas aa gaye! Let's continue our map!",
+ "fresh_start": "Naya game! A fresh new map — let's start from the beginning!",
+ "pick_phase": "Which set shall we play? Choose one!"
 }

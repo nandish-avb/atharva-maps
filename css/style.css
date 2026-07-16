@@ -337,6 +337,140 @@ body.nolabels .label { display: none; }
 #zoomctl button:active { transform: scale(.9); }
 #board-wrap { position: relative; }
 
+/* ---------- Start screen ---------- */
+#start-screen {
+  position: absolute; inset: 0;
+  z-index: 90;
+  background: linear-gradient(180deg, #7ec9f5 0%, #4a9fdc 60%, #2e7cb8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#start-card { text-align: center; padding: 24px; }
+#start-logo { font-size: 84px; animation: qbob 2.2s ease-in-out infinite; }
+#start-card h1 {
+  font-size: 34px;
+  color: #fff;
+  text-shadow: 0 3px 0 rgba(20, 51, 92, .4);
+  margin: 8px 0 2px;
+}
+#start-sub {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ffe28a;
+  margin-bottom: 26px;
+}
+.start-btn {
+  display: block;
+  width: 250px;
+  margin: 12px auto 0;
+  padding: 16px 20px;
+  font-size: 22px;
+  font-weight: bold;
+  font-family: var(--font);
+  color: #14335c;
+  background: linear-gradient(180deg, #ffe082, #ffc226);
+  border: none;
+  border-radius: 20px;
+  box-shadow: 0 6px 0 #c78f00;
+  cursor: pointer;
+}
+.start-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #c78f00; }
+.start-btn.secondary {
+  font-size: 16px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, .92);
+  box-shadow: 0 5px 0 rgba(0, 0, 0, .2);
+}
+
+/* ---------- Phase picker ---------- */
+#phases {
+  position: absolute; inset: 0;
+  z-index: 80;
+  background: rgba(20, 40, 90, .55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#phase-card {
+  width: min(94vw, 430px);
+  max-height: 86%;
+  overflow-y: auto;
+  background: linear-gradient(180deg, #fffdf5, #ffedbe);
+  border: 4px solid #ffd026;
+  border-radius: 24px;
+  padding: 14px;
+  box-shadow: 0 14px 30px rgba(10, 40, 80, .4);
+}
+#phase-title {
+  text-align: center;
+  font-size: 22px;
+  font-weight: bold;
+  color: #b98300;
+  margin-bottom: 10px;
+}
+#phase-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.phase {
+  position: relative;
+  border: 3px solid #ffd026;
+  border-radius: 16px;
+  background: #fff;
+  padding: 10px 6px 8px;
+  font-family: var(--font);
+  cursor: pointer;
+  text-align: center;
+}
+.phase:active { transform: scale(.94); }
+.phase.now { border-color: #5c9ce6; background: #eaf4ff; box-shadow: 0 0 0 3px rgba(92, 156, 230, .35); }
+.phase.done { background: #f0fff4; border-color: #4caf50; }
+.ph-emoji { font-size: 34px; }
+.ph-num {
+  position: absolute;
+  top: 6px; left: 10px;
+  font-size: 15px;
+  font-weight: bold;
+  color: #b98300;
+}
+.ph-name { font-size: 13px; font-weight: bold; color: #14335c; margin-top: 2px; }
+.ph-prog { font-size: 13px; font-weight: bold; color: #d97706; margin-top: 2px; }
+#phase-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+}
+#btn-restart-all {
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: bold;
+  color: #b3261e;
+  background: #ffe9e7;
+  border: 2px solid #f3b3ae;
+  border-radius: 14px;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+#btn-restart-all.armed {
+  background: #d93025;
+  color: #fff;
+  border-color: #a3140b;
+  animation: pulse .5s ease-in-out infinite;
+}
+#btn-phases-close {
+  width: 46px; height: 46px;
+  font-size: 18px;
+  border: none;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 3px 0 rgba(0,0,0,.15);
+  cursor: pointer;
+}
+#level-dots { cursor: pointer; }
+
 /* ---------- Other-window curtain ---------- */
 #curtain {
   position: absolute; inset: 0;
