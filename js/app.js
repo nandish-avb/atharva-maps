@@ -19,22 +19,38 @@ const audio = (() => {
   let queue = [];
   let unlocked = false;
   let muted = false;
+  let token = 0;   // bumped on stop(): stale clips can never advance the queue
 
   function src(key) { return 'assets/audio/' + key + '.mp3'; }
 
   function stop() {
+    token++;
     queue = [];
-    if (current) { current.pause(); current = null; }
+    if (current) {
+      current.onended = current.onerror = null;
+      current.pause();
+      current = null;
+    }
   }
 
   function playNext() {
     if (!queue.length) { current = null; return; }
+    const myToken = token;
     const key = queue.shift();
     const a = new Audio(src(key));
     current = a;
-    a.onended = playNext;
-    a.onerror = playNext;          // missing clip: skip silently
-    a.play().catch(() => playNext());
+    let done = false;
+    // A slow-loading clip that gets interrupted rejects its play() promise
+    // AND may fire onerror — without this guard each interruption spawned a
+    // second playback chain (overlapping, repeating speech on slow networks).
+    const advance = () => {
+      if (done || myToken !== token || current !== a) return;
+      done = true;
+      playNext();
+    };
+    a.onended = advance;
+    a.onerror = advance;           // missing clip: skip silently
+    a.play().catch(advance);
   }
 
   function speak(keys, { interrupt = true } = {}) {
@@ -775,8 +791,10 @@ function finishRolePlay() {
   if (state.mode === 'puzzle') setView(fitCcs(levelCcs()));
 }
 
+const rpAnswered = () => $('rp-inner').classList.contains('flipped');
+
 function rpCorrect() {
-  if (!rp) return;
+  if (!rp || rpAnswered()) return;
   const cc = rp.cc, stage = rp.stage;
   const pos = slotScreenPos(cc);
   confetti(pos.x, pos.y);
@@ -790,7 +808,7 @@ function rpCorrect() {
 }
 
 function rpReveal(auto = false) {
-  if (!rp) return;
+  if (!rp || rpAnswered()) return;
   const cc = rp.cc, stage = rp.stage;
   let clips;
   if (stage === 'name') clips = ['reveal', cc + '_name', cc + '_cue'];
@@ -803,7 +821,7 @@ function rpReveal(auto = false) {
 }
 
 function onFlagPick(k, btn) {
-  if (!rp || rp.stage !== 'flag') return;
+  if (!rp || rp.stage !== 'flag' || rpAnswered()) return;
   if (k === rp.cc) {
     btn.classList.add('right');
     rpCorrect();
@@ -817,7 +835,7 @@ function onFlagPick(k, btn) {
 }
 
 $('rp-hint').addEventListener('click', () => {
-  if (!rp) return;
+  if (!rp || rpAnswered()) return;
   audio.unlock();
   const cc = rp.cc;
   if (rp.stage === 'flag') { speakRp([cc + '_flaghint']); return; }
@@ -835,13 +853,26 @@ $('rp-reveal').addEventListener('click', () => { audio.unlock(); rpReveal(); });
 $('rp-close').addEventListener('click', () => closeRolePlay());
 
 /* ================= Quiz modes ================= */
+let quizTimer = null;   // single timer — re-tapping buttons must never stack quizzes
+
+function scheduleQuiz(delay) {
+  clearTimeout(quizTimer);
+  quizTimer = setTimeout(nextQuiz, delay);
+}
+
 function setMode(mode) {
   if (mode !== 'puzzle' && state.placed.size < 1) {
     // Nothing on the map yet: gently push back to the puzzle.
     audio.speak('mode_puzzle');
     mode = 'puzzle';
   }
+  if (mode === state.mode) {
+    // Same button tapped again: just repeat the current prompt.
+    if (state.lastSpoken) audio.speak(state.lastSpoken);
+    return;
+  }
   closeRolePlay(true);
+  clearTimeout(quizTimer);
   state.mode = mode;
   state.quizTarget = null;
   state.quizWrong = 0;
@@ -860,7 +891,7 @@ function setMode(mode) {
   } else {
     audio.speak(mode === 'flags' ? 'mode_flags' : 'mode_capitals');
     setView(fitCcs([...state.placed]));
-    setTimeout(nextQuiz, 1800);
+    scheduleQuiz(1800);
   }
 }
 
@@ -870,7 +901,8 @@ function nextQuiz() {
   if (!pool.length) { setMode('puzzle'); return; }
   let cc;
   do { cc = pool[Math.floor(Math.random() * pool.length)]; }
-  while (pool.length > 1 && cc === state.quizTarget);
+  while (pool.length > 1 && (cc === state.quizTarget || cc === state.lastQuizCc));
+  state.lastQuizCc = cc;   // never ask the same question twice in a row
   state.quizTarget = cc;
   state.quizWrong = 0;
 
@@ -904,7 +936,7 @@ function answerQuiz(cc) {
     state.lastSpoken = clips;
     state.quizTarget = null;
     state.quizWrong = 0;
-    setTimeout(nextQuiz, 3400);
+    scheduleQuiz(3400);
   } else {
     const p = paths[cc];
     p.classList.add('wiggle');
@@ -925,7 +957,7 @@ function answerQuiz(cc) {
         ? ['quiz_reveal', t + '_name']
         : ['quiz_reveal', t + '_capital', t + '_name'];
       speakRp(clips);
-      setTimeout(nextQuiz, 4200);
+      scheduleQuiz(4200);
     } else {
       audio.speak([cc + '_name', tryAgain()]);
     }
