@@ -1,0 +1,428 @@
+/* Atharva's World — Europe puzzle. Phone-first, portrait. */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --sea-1: #7ec8f2;
+  --sea-2: #4aa3e0;
+  --wood: #f5b942;
+  --ink: #1e3a5f;
+  --font: 'Comic Sans MS', 'Chalkboard SE', 'Segoe UI', system-ui, sans-serif;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--font);
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  background: linear-gradient(180deg, #aee3ff 0%, var(--sea-1) 30%, var(--sea-2) 100%);
+}
+
+#app {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  max-width: 560px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* ---------- Top bar ---------- */
+#topbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: max(8px, env(safe-area-inset-top)) 12px 6px;
+  z-index: 20;
+}
+
+.mode-btn {
+  font-size: 24px;
+  line-height: 1;
+  width: 46px;
+  height: 46px;
+  border: none;
+  border-radius: 18px;
+  background: rgba(255,255,255,.85);
+  box-shadow: 0 3px 0 rgba(0,0,0,.15);
+  cursor: pointer;
+  transition: transform .15s;
+  flex: 0 0 auto;
+}
+.mode-btn.small { width: 38px; height: 38px; font-size: 18px; border-radius: 13px; }
+.mode-btn:active { transform: scale(.9); }
+.mode-btn.active {
+  background: #ffe66d;
+  box-shadow: 0 3px 0 rgba(0,0,0,.2), 0 0 0 3px #fff inset;
+  animation: bounce-in .3s;
+}
+
+#level-dots { flex: 1; display: flex; justify-content: center; gap: 4px; min-width: 0; }
+#level-dots .dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  flex: 0 1 auto;
+  background: rgba(255,255,255,.5);
+  box-shadow: 0 1px 2px rgba(0,0,0,.15);
+}
+#level-dots .dot.done { background: #ffd026; }
+#level-dots .dot.now { background: #fff; transform: scale(1.3); }
+
+/* ---------- Quiz card ---------- */
+#quiz-card {
+  position: absolute;
+  top: 74px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 25;
+  background: #fff;
+  border-radius: 20px;
+  padding: 10px;
+  box-shadow: 0 8px 20px rgba(0,0,0,.25);
+  animation: drop-in .4s;
+}
+#quiz-card img { display: block; width: 120px; border-radius: 10px; }
+#quiz-star { font-size: 64px; text-align: center; animation: pulse 1.2s infinite; }
+
+/* ---------- Board ---------- */
+#board-wrap {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 900px;
+  z-index: 5;
+}
+
+#board-tilt {
+  position: relative;
+  /* width/height set by fitBoard() in app.js to match the map's aspect ratio */
+  transform: rotateX(14deg);
+  transition: transform .5s;
+  background: linear-gradient(180deg, #8ed4f7 0%, #5eb2e8 100%);
+  border-radius: 22px;
+  border: 4px solid rgba(255, 255, 255, .55);
+  box-shadow:
+    0 22px 30px rgba(10, 50, 90, .35),
+    0 6px 0 #2e7cb8;
+}
+
+#board {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+#board-decor { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+#board-decor .cloud { position: absolute; font-size: 34px; opacity: .9; animation: drift 24s linear infinite; }
+#board-decor .c1 { top: 4%; left: -12%; }
+#board-decor .c2 { top: 12%; left: -30%; font-size: 24px; animation-duration: 34s; }
+#board-decor .sun { position: absolute; top: 2%; right: 4%; font-size: 36px; animation: spin 30s linear infinite; }
+
+/* Country states inside the SVG */
+.country {
+  stroke: rgba(30, 58, 95, .5);
+  stroke-width: 1;
+  transition: opacity .3s;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.country.future {           /* later levels: faint land so continent reads */
+  fill: #cfe8d8;
+  opacity: .55;
+  pointer-events: none;
+}
+.country.slot {             /* current level, waiting for its piece */
+  fill: rgba(20, 60, 100, .30);
+  stroke: rgba(255,255,255,.9);
+  stroke-width: 1.6;
+  stroke-dasharray: 6 5;
+  pointer-events: none;
+}
+.country.slot.hint { animation: slot-pulse 1s infinite; }
+.country.placed {
+  stroke: #fff;
+  stroke-width: 1.6;
+  cursor: pointer;
+  filter: drop-shadow(1.5px 2.5px 0 rgba(20,40,70,.45));
+}
+.country.placed.flash { animation: piece-flash .6s; }
+.country.placed.wiggle { animation: wiggle .5s; }
+.country.pop { animation: piece-pop .55s; }
+
+/* ---------- Tray ---------- */
+#tray {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
+  overflow-x: auto;
+  padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+  min-height: 108px;
+  background: linear-gradient(180deg, #ffca4d, var(--wood));
+  border-radius: 26px 26px 0 0;
+  box-shadow: 0 -6px 18px rgba(0,0,0,.18);
+  z-index: 20;
+}
+#tray::-webkit-scrollbar { display: none; }
+
+.chip:first-child { margin-left: auto; }
+.chip:last-child { margin-right: auto; }
+
+.chip {
+  flex: 0 0 auto;
+  width: 76px;
+  height: 84px;
+  border: none;
+  border-radius: 18px;
+  background: #fff7e6;
+  box-shadow: 0 4px 0 rgba(140, 90, 0, .35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  touch-action: none;
+  transition: transform .15s, opacity .3s;
+}
+.chip svg { width: 62px; height: 70px; overflow: visible; }
+.chip svg path { filter: drop-shadow(1px 2px 0 rgba(20,40,70,.4)); }
+.chip.selected {
+  background: #ffe66d;
+  transform: translateY(-8px) scale(1.08);
+  box-shadow: 0 10px 14px rgba(0,0,0,.25);
+}
+.chip.ghost { opacity: .25; }
+.chip.gone { display: none; }
+
+#tray .tray-msg {
+  font-size: 17px;
+  font-weight: bold;
+  color: #7a4b00;
+  text-align: center;
+  width: 100%;
+}
+
+/* ---------- Floating drag piece ---------- */
+#drag-piece {
+  position: fixed;
+  left: 0; top: 0;
+  pointer-events: none;
+  z-index: 90;
+  overflow: visible;
+}
+#drag-piece path {
+  filter: drop-shadow(0 14px 10px rgba(10,30,60,.4));
+}
+
+/* ---------- Info banner ---------- */
+#banner {
+  position: absolute;
+  left: 12px; right: 12px;
+  bottom: 124px;
+  z-index: 30;
+  background: #fff;
+  border-radius: 22px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 10px 26px rgba(0,0,0,.3);
+  animation: drop-in .35s;
+}
+#banner-flag {
+  width: 86px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.25);
+  flex: 0 0 auto;
+}
+#banner-text { flex: 1; min-width: 0; }
+#banner-name {
+  font-size: 26px;
+  font-weight: bold;
+  color: var(--ink);
+  letter-spacing: .5px;
+}
+#banner-capital { font-size: 17px; color: #d97706; font-weight: bold; }
+#banner-capital::before { content: '⭐ '; }
+#banner-cue {
+  font-size: 30px;
+  border: none;
+  background: #ffe66d;
+  width: 54px; height: 54px;
+  border-radius: 50%;
+  box-shadow: 0 3px 0 rgba(0,0,0,.15);
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+#banner-cue:active { transform: scale(.9); }
+
+/* ---------- Celebration ---------- */
+#celebrate {
+  position: absolute; inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(20, 40, 90, .45);
+}
+#celebrate-inner { text-align: center; animation: bounce-in .5s; }
+#celebrate-stars { font-size: 56px; animation: pulse 1s infinite; }
+#celebrate-emoji { font-size: 110px; }
+
+/* ---------- FX ---------- */
+#fx-layer { position: fixed; inset: 0; pointer-events: none; z-index: 95; overflow: hidden; }
+.confetti {
+  position: absolute;
+  width: 12px; height: 12px;
+  border-radius: 3px;
+  animation: confetti-fall 1.4s ease-in forwards;
+}
+
+.hidden { display: none !important; }
+
+/* ---------- Boot guard ----------
+   The app stays invisible until app.js runs, so a broken copy
+   (e.g. opened as file://) never shows a dead second map. */
+#app { visibility: hidden; }
+body.booted #app { visibility: visible; }
+#boot-note {
+  position: fixed; inset: 0;
+  display: none;
+  align-items: center; justify-content: center;
+  text-align: center;
+  font-size: 18px; color: var(--ink);
+  padding: 24px;
+}
+body:not(.booted) #boot-note { display: flex; }
+
+/* ---------- Country name labels (for assisting adults) ---------- */
+.label {
+  font-family: var(--font);
+  font-weight: bold;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  fill: #14335c;
+  stroke: rgba(255, 255, 255, .85);
+  stroke-width: 2.5px;
+  paint-order: stroke;
+  pointer-events: none;
+  display: none;
+}
+.label.on-placed { display: inline; }
+.label.on-slot { display: inline; fill: #fff; stroke: rgba(20, 51, 92, .55); }
+body.nolabels .label { display: none; }
+
+/* ---------- Zoom controls ---------- */
+#zoomctl {
+  position: absolute;
+  right: 10px;
+  bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 22;
+}
+#zoomctl button {
+  width: 44px; height: 44px;
+  font-size: 20px;
+  border: none;
+  border-radius: 14px;
+  background: rgba(255,255,255,.9);
+  box-shadow: 0 3px 0 rgba(0,0,0,.15);
+  cursor: pointer;
+}
+#zoomctl button:active { transform: scale(.9); }
+#board-wrap { position: relative; }
+
+/* ---------- Other-window curtain ---------- */
+#curtain {
+  position: absolute; inset: 0;
+  z-index: 99;
+  background: rgba(20, 40, 90, .82);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+#curtain-inner {
+  text-align: center;
+  color: #fff;
+  font-size: 19px;
+  font-weight: bold;
+  padding: 24px;
+}
+#curtain-inner div { font-size: 52px; margin-bottom: 12px; }
+
+/* ---------- Chip name (for assisting adults) ---------- */
+.chip {
+  flex-direction: column;
+  gap: 2px;
+}
+.chip svg { width: 56px; height: 56px; }
+.chip-name {
+  font-size: 10px;
+  font-weight: bold;
+  color: #7a4b00;
+  max-width: 72px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------- Keyframes ---------- */
+@keyframes slot-pulse {
+  0%, 100% { fill: rgba(20, 60, 100, .30); }
+  50% { fill: rgba(255, 230, 109, .75); }
+}
+@keyframes piece-pop {
+  0% { transform: scale(1.35); }
+  55% { transform: scale(.92); }
+  100% { transform: scale(1); }
+}
+@keyframes piece-flash {
+  0%, 100% { fill-opacity: 1; }
+  50% { fill-opacity: .35; }
+}
+@keyframes wiggle {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+@keyframes bounce-in {
+  0% { transform: scale(.3); }
+  60% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+@keyframes drop-in {
+  from { transform: translateY(-18px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+#quiz-card { animation-name: drop-in-center; }
+@keyframes drop-in-center {
+  from { transform: translateX(-50%) translateY(-18px); opacity: 0; }
+  to { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+}
+@keyframes drift {
+  from { transform: translateX(0); }
+  to { transform: translateX(140vw); }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes confetti-fall {
+  0% { transform: translateY(0) rotate(0); opacity: 1; }
+  100% { transform: translateY(46vh) rotate(540deg); opacity: 0; }
+}
+
+/* Landscape / tablet: keep board comfy */
+@media (min-width: 700px) {
+  #banner-name { font-size: 32px; }
+  .chip { width: 88px; height: 96px; }
+}

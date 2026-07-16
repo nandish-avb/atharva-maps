@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1a6fc9">
+<title>Atharva's World — Europe</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icon.svg">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- Top bar: mode buttons (icons only) + settings -->
+  <header id="topbar">
+    <button class="mode-btn active" id="btn-puzzle" data-mode="puzzle" aria-label="Puzzle">🧩</button>
+    <button class="mode-btn" id="btn-flags" data-mode="flags" aria-label="Flag hunt">🚩</button>
+    <button class="mode-btn" id="btn-capitals" data-mode="capitals" aria-label="Capital game">⭐</button>
+    <div id="level-dots"></div>
+    <button class="mode-btn small" id="btn-sound" aria-label="Repeat">🔊</button>
+    <button class="mode-btn small" id="btn-labels" aria-label="Country names">🔤</button>
+    <button class="mode-btn small" id="btn-gear" aria-label="Settings">⚙️</button>
+  </header>
+
+  <!-- Quiz card (flag hunt / capital game) -->
+  <div id="quiz-card" class="hidden">
+    <img id="quiz-flag" alt="">
+    <div id="quiz-star" class="hidden">⭐</div>
+  </div>
+
+  <!-- The 3D tilted puzzle board -->
+  <main id="board-wrap">
+    <div id="board-tilt">
+      <div id="board-decor">
+        <span class="cloud c1">☁️</span>
+        <span class="cloud c2">☁️</span>
+        <span class="sun">🌞</span>
+      </div>
+      <svg id="board" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet"></svg>
+    </div>
+    <div id="zoomctl">
+      <button id="zoom-in" aria-label="Zoom in">➕</button>
+      <button id="zoom-out" aria-label="Zoom out">➖</button>
+      <button id="zoom-home" aria-label="Whole map">🗺️</button>
+    </div>
+  </main>
+
+  <!-- Info banner (flag + name + capital) -->
+  <div id="banner" class="hidden">
+    <img id="banner-flag" alt="">
+    <div id="banner-text">
+      <div id="banner-name"></div>
+      <div id="banner-capital"></div>
+    </div>
+    <button id="banner-cue" aria-label="Funny cue">😄</button>
+  </div>
+
+  <!-- Piece tray -->
+  <footer id="tray"></footer>
+
+  <!-- Celebration overlay -->
+  <div id="celebrate" class="hidden">
+    <div id="celebrate-inner">
+      <div id="celebrate-stars">⭐⭐⭐</div>
+      <div id="celebrate-emoji">🎉</div>
+    </div>
+  </div>
+
+  <!-- Confetti layer + floating drag piece live here -->
+  <div id="fx-layer"></div>
+
+  <!-- Shown when another window/tab of the app takes over the sound -->
+  <div id="curtain" class="hidden">
+    <div id="curtain-inner">
+      <div>🔇➡️🗺️</div>
+      <p>The map is playing in another window.<br>Tap here to play in this one!</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- Visible only if the app couldn't start (e.g. opened as a plain file) -->
+<div id="boot-note">
+  <p>🗺️ Please open the map through its link,<br>e.g. <b>http://&lt;your-pc&gt;:8080</b> — not as a file.</p>
+</div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

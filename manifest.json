@@ -1,0 +1,13 @@
+{
+  "name": "Atharva's World — Europe",
+  "short_name": "Atharva Maps",
+  "description": "A talking 3D puzzle map of Europe for little explorers",
+  "start_url": ".",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "background_color": "#aee3ff",
+  "theme_color": "#1a6fc9",
+  "icons": [
+    { "src": "assets/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
