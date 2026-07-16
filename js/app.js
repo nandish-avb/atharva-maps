@@ -1,6 +1,11 @@
 // Atharva's World — Europe puzzle engine.
 import { MAP_W, MAP_H, SHAPES } from './map-europe.js';
-import { COUNTRIES, LEVELS, UI_AUDIO } from './data.js';
+import { COUNTRIES, LEVELS, UI_AUDIO, VISUALS } from './data.js';
+
+// Split an emoji string into whole emoji (handles 🧜‍♀️-style joined ones).
+const graphemes = s => typeof Intl.Segmenter !== 'undefined'
+  ? [...new Intl.Segmenter('en', { granularity: 'grapheme' }).segment(s)].map(x => x.segment)
+  : [...s];
 
 const SVGNS = 'http://www.w3.org/2000/svg';
 const $ = id => document.getElementById(id);
@@ -477,6 +482,7 @@ function placePiece(cc, chip) {
 
   const slot = slotScreenPos(cc);
   confetti(slot.x, slot.y);
+  cueBurst(cc, VISUALS[cc].icons);
 
   const clips = [praise(), cc + '_cue'];
   audio.speak(clips);
@@ -642,6 +648,7 @@ function showBanner(cc) {
   $('banner-flag').src = 'assets/flags/' + cc + '.svg';
   $('banner-name').textContent = c.name;
   $('banner-capital').textContent = c.capital;
+  $('banner-icons').textContent = VISUALS[cc].icons + ' ' + VISUALS[cc].capIcons;
   const btn = $('banner-cue');
   btn.onclick = ev => {
     ev.stopPropagation();
@@ -705,6 +712,40 @@ function miniShape(cc) {
   return svg;
 }
 
+// Animated emoji row; tapping it replays the matching voice clip.
+function iconsRow(icons, clip) {
+  const div = document.createElement('div');
+  div.className = 'rp-icons';
+  graphemes(icons).forEach((emo, i) => {
+    const s = document.createElement('span');
+    s.textContent = emo;
+    s.style.animationDelay = (i * 0.13) + 's';
+    div.appendChild(s);
+  });
+  if (clip) {
+    div.addEventListener('click', ev => { ev.stopPropagation(); speakRp([clip]); });
+  }
+  return div;
+}
+
+function col(...children) {
+  const d = document.createElement('div');
+  d.className = 'rp-col';
+  d.append(...children);
+  return d;
+}
+function row(...children) {
+  const d = document.createElement('div');
+  d.className = 'rp-row';
+  d.append(...children);
+  return d;
+}
+function el(html) {
+  const t = document.createElement('template');
+  t.innerHTML = html.trim();
+  return t.content.firstChild;
+}
+
 function setStage(stage) {
   if (!rp) return;
   rp.stage = stage;
@@ -717,12 +758,18 @@ function setStage(stage) {
   $('rp-yes').style.display = '';
 
   if (stage === 'name') {
-    front.appendChild(miniShape(cc));
-    front.insertAdjacentHTML('beforeend', '<div class="rp-big">❓</div>');
+    // The emoji row is the visual hint — he "reads" the pictures.
+    front.appendChild(col(
+      row(miniShape(cc), el('<div class="rp-big">❓</div>')),
+      iconsRow(VISUALS[cc].icons, cc + '_hint'),
+    ));
     speakRp(['guess_who', cc + '_hint']);
   } else if (stage === 'capital') {
-    front.insertAdjacentHTML('beforeend',
-      `<div class="rp-small">${COUNTRIES[cc].name}</div><div class="rp-big">🏛️❓</div>`);
+    front.appendChild(col(
+      el(`<div class="rp-small2">${COUNTRIES[cc].name}</div>`),
+      row(iconsRow(VISUALS[cc].capIcons, cc + '_captease'),
+          el('<div class="rp-big">❓</div>')),
+    ));
     speakRp(['guess_cap', cc + '_captease']);
   } else { // flag
     $('rp-yes').style.display = 'none';   // the flag itself is the answer button
@@ -758,11 +805,17 @@ function showAnswerFace(stage, cc) {
   const back = $('rp-answer');
   back.innerHTML = '';
   if (stage === 'name') {
-    back.appendChild(miniShape(cc));
-    back.insertAdjacentHTML('beforeend', `<div class="rp-word">${COUNTRIES[cc].name}</div>`);
+    back.appendChild(col(
+      row(miniShape(cc), el(`<div class="rp-word">${COUNTRIES[cc].name}</div>`)),
+      iconsRow(VISUALS[cc].icons, cc + '_cue'),
+    ));
+    cueBurst(cc, VISUALS[cc].icons);
   } else if (stage === 'capital') {
-    back.insertAdjacentHTML('beforeend',
-      `<div class="rp-big">⭐</div><div class="rp-word">${COUNTRIES[cc].capital}</div>`);
+    back.appendChild(col(
+      el(`<div class="rp-word">${COUNTRIES[cc].capital}</div>`),
+      iconsRow(VISUALS[cc].capIcons, cc + '_capcue'),
+    ));
+    cueBurst(cc, VISUALS[cc].capIcons);
   } else {
     back.insertAdjacentHTML('beforeend',
       `<img class="rp-bigflag" src="assets/flags/${cc}.svg" alt="">
@@ -808,7 +861,7 @@ function rpCorrect() {
   confetti(pos.x, pos.y);
   const clips =
     stage === 'name' ? [gotIt(), cc + '_name', cc + '_cue'] :
-    stage === 'capital' ? [gotIt(), cc + '_capital'] :
+    stage === 'capital' ? [gotIt(), cc + '_capital', cc + '_capcue'] :
     [gotIt(), cc + '_name'];
   speakRp(clips);
   showAnswerFace(stage, cc);
@@ -820,7 +873,7 @@ function rpReveal(auto = false) {
   const cc = rp.cc, stage = rp.stage;
   let clips;
   if (stage === 'name') clips = ['reveal', cc + '_name', cc + '_cue'];
-  else if (stage === 'capital') clips = ['reveal', cc + '_capital'];
+  else if (stage === 'capital') clips = ['reveal', cc + '_capital', cc + '_capcue'];
   else clips = ['flag_reveal', cc + '_name'];
   if (auto && stage === 'flag') clips = ['flag_reveal', cc + '_name'];
   speakRp(clips);
@@ -945,6 +998,7 @@ function answerQuiz(cc) {
   if (cc === state.quizTarget) {
     const slot = slotScreenPos(cc);
     confetti(slot.x, slot.y);
+    cueBurst(cc, state.mode === 'flags' ? VISUALS[cc].icons : VISUALS[cc].capIcons);
     flash(cc);
     showBanner(cc);
     const clips = state.mode === 'flags'
@@ -996,6 +1050,23 @@ function confetti(x, y, n = 26) {
     setTimeout(() => d.remove(), 1800);
   }
 }
+// Emoji stickers pop up over a country on the 3D board — the physical
+// visual for its cue ("waffles over Belgium").
+function cueBurst(cc, icons) {
+  const pos = slotScreenPos(cc);
+  const segs = graphemes(icons);
+  segs.forEach((emo, i) => {
+    const d = document.createElement('div');
+    d.className = 'cue-icon';
+    d.textContent = emo;
+    d.style.left = (pos.x + (i - (segs.length - 1) / 2) * 46 - 20) + 'px';
+    d.style.top = (pos.y - 34) + 'px';
+    d.style.animationDelay = (i * 0.16) + 's';
+    fxLayer.appendChild(d);
+    setTimeout(() => d.remove(), 3400 + i * 160);
+  });
+}
+
 function bigConfetti() {
   const w = window.innerWidth;
   for (let i = 0; i < 4; i++) {
