@@ -3,6 +3,7 @@
 //   node tools/make-manifest.mjs > tools/audio-manifest.json
 import * as EU from '../js/data.js';
 import * as AS from '../js/data-asia.js';
+import * as AF from '../js/data-africa.js';
 
 const clips = {};
 const WORDS = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight'];
@@ -27,5 +28,6 @@ function addContinent(D) {
 
 addContinent(EU);
 addContinent(AS);
+addContinent(AF);
 Object.assign(clips, EU.UI_AUDIO);
 process.stdout.write(JSON.stringify(clips, null, 1));

@@ -3,6 +3,8 @@ import * as MAP_EU from './map-europe.js';
 import * as DATA_EU from './data.js';
 import * as MAP_AS from './map-asia.js';
 import * as DATA_AS from './data-asia.js';
+import * as MAP_AF from './map-africa.js';
+import * as DATA_AF from './data-africa.js';
 
 // Split an emoji string into whole emoji (handles 🧜‍♀️-style joined ones).
 const graphemes = s => typeof Intl.Segmenter !== 'undefined'
@@ -16,6 +18,7 @@ const $ = id => document.getElementById(id);
 const CONTINENTS = {
   europe: { label: 'Europe', map: MAP_EU, data: DATA_EU },
   asia: { label: 'Asia', map: MAP_AS, data: DATA_AS },
+  africa: { label: 'Africa', map: MAP_AF, data: DATA_AF },
 };
 const CONT_KEY = 'atharva-continent';
 let continent = localStorage.getItem(CONT_KEY);
@@ -185,7 +188,8 @@ function buildBoard() {
   lg.id = 'labels';
   for (const [cc, s] of Object.entries(SHAPES)) {
     const t = document.createElementNS(SVGNS, 'text');
-    t.textContent = SHORT[cc] || COUNTRIES[cc].name;
+    // Background-only shapes (e.g. W. Sahara) exist in SHAPES but not COUNTRIES.
+    t.textContent = SHORT[cc] || (COUNTRIES[cc] ? COUNTRIES[cc].name : s.name);
     t.setAttribute('x', s.cx);
     t.setAttribute('y', s.cy);
     const size = Math.sqrt((s.x1 - s.x0) * (s.y1 - s.y0));
