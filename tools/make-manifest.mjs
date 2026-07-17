@@ -4,6 +4,9 @@
 import * as EU from '../js/data.js';
 import * as AS from '../js/data-asia.js';
 import * as AF from '../js/data-africa.js';
+import * as NA from '../js/data-namerica.js';
+import * as SA from '../js/data-samerica.js';
+import * as OC from '../js/data-oceania.js';
 
 const clips = {};
 const WORDS = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight'];
@@ -29,5 +32,8 @@ function addContinent(D) {
 addContinent(EU);
 addContinent(AS);
 addContinent(AF);
+addContinent(NA);
+addContinent(SA);
+addContinent(OC);
 Object.assign(clips, EU.UI_AUDIO);
 process.stdout.write(JSON.stringify(clips, null, 1));

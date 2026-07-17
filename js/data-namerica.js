@@ -1,0 +1,207 @@
+// North America content — names, capitals, cues, levels, guess-game and visuals.
+
+export const COUNTRIES = {
+  // ---- Level 1: The Big Three ----
+  ca: {
+    name: 'Canada', capital: 'Ottawa', color: '#ef5350',
+    cue: "Canada! Maple syrup on pancakes — drip drip, yum! And moose with antlers like big big hands!",
+    findcap: "Ottawa! Where does Ottawa live? Find Ottawa's country!",
+  },
+  us: {
+    name: 'America', capital: 'Washington', color: '#5c9ce6',
+    cue: "America! The Statue of Liberty holds her torch up high, and yellow school buses go everywhere!",
+    findcap: "Washington! Where does Washington live? Find Washington's country!",
+  },
+  mx: {
+    name: 'Mexico', capital: 'Mexico City', color: '#66bb6a',
+    cue: "Mexico! Tacos and maracas — shake shake shake! And old old pyramids with big steps!",
+    findcap: "Mexico City! Where does Mexico City live? Find its country!",
+  },
+
+  // ---- Level 2: The Middle Bridge ----
+  gt: {
+    name: 'Guatemala', capital: 'Guatemala City', color: '#4dd0e1',
+    cue: "Guatemala! Volcanoes puff puff smoke, and rainbow birds called quetzals fly by!",
+    findcap: "Guatemala City! Where does Guatemala City live? Find its country!",
+  },
+  bz: {
+    name: 'Belize', capital: 'Belmopan', color: '#ffb74d',
+    cue: "Belize! A giant blue hole in the sea — a big round swimming circle!",
+    findcap: "Belmopan! Where does Belmopan live? Find Belmopan's country!",
+  },
+  hn: {
+    name: 'Honduras', capital: 'Tegucigalpa', color: '#ba68c8',
+    cue: "Honduras! Sometimes it RAINS FISH here — really! Little fish falling from the sky!",
+    findcap: "Tegucigalpa! Where does Tegucigalpa live? Find its country!",
+  },
+  sv: {
+    name: 'El Salvador', capital: 'San Salvador', color: '#26a69a',
+    cue: "El Salvador! The land of volcanoes — and yummy pupusas, like little stuffed rotis!",
+    findcap: "San Salvador! Where does San Salvador live? Find its country!",
+  },
+  ni: {
+    name: 'Nicaragua', capital: 'Managua', color: '#ff8a65',
+    cue: "Nicaragua! A lake with SHARKS in it — the only lake sharks in the whole world!",
+    findcap: "Managua! Where does Managua live? Find Managua's country!",
+  },
+  cr: {
+    name: 'Costa Rica', capital: 'San José', color: '#9ccc65',
+    cue: "Costa Rica! Sloths hanging slooowly from the trees — pura vida, happy life!",
+    findcap: "San José! Where does San José live? Find San José's country!",
+  },
+  pa: {
+    name: 'Panama', capital: 'Panama City', color: '#7986cb',
+    cue: "Panama! A magic water bridge — big ships climb water steps to cross the land!",
+    findcap: "Panama City! Where does Panama City live? Find its country!",
+  },
+
+  // ---- Level 3: Island Friends ----
+  cu: {
+    name: 'Cuba', capital: 'Havana', color: '#f06292',
+    cue: "Cuba! Old rainbow-coloured cars from long long ago still drive around — vroom!",
+    findcap: "Havana! Where does Havana live? Find Havana's country!",
+  },
+  jm: {
+    name: 'Jamaica', capital: 'Kingston', color: '#ffd54f',
+    cue: "Jamaica! Reggae music — one love! And the fastest runner in the whole world!",
+    findcap: "Kingston! Where does Kingston live? Find Kingston's country!",
+  },
+  ht: {
+    name: 'Haiti', capital: 'Port-au-Prince', color: '#42a5f5',
+    cue: "Haiti! Paintings of every colour, and a big fortress on a mountain!",
+    findcap: "Port-au-Prince! Where does Port-au-Prince live? Find its country!",
+  },
+  do: {
+    name: 'Dominican Republic', capital: 'Santo Domingo', color: '#81c784',
+    cue: "The Dominican Republic! Merengue dancing on the beach — cha cha cha!",
+    findcap: "Santo Domingo! Where does Santo Domingo live? Find its country!",
+  },
+  bs: {
+    name: 'The Bahamas', capital: 'Nassau', color: '#4fc3f7',
+    cue: "The Bahamas! Swimming PIGS! Little pink pigs paddling in blue blue water!",
+    findcap: "Nassau! Where does Nassau live? Find Nassau's country!",
+  },
+  tt: {
+    name: 'Trinidad and Tobago', capital: 'Port of Spain', color: '#ce93d8',
+    cue: "Trinidad and Tobago! Steel drums made from old barrels — ping ping pong!",
+    findcap: "Port of Spain! Where does Port of Spain live? Find its country!",
+  },
+};
+
+export const LEVELS = [
+  { name: 'The Big Three', emoji: '🍁', ccs: ['ca', 'us', 'mx'] },
+  { name: 'The Middle Bridge', emoji: '🌋', ccs: ['gt', 'bz', 'hn', 'sv', 'ni', 'cr', 'pa'] },
+  { name: 'Island Friends', emoji: '🏝️', ccs: ['cu', 'jm', 'ht', 'do', 'bs', 'tt'] },
+];
+
+export const SHORT = {
+  ca: 'Canada', us: 'America', mx: 'Mexico', gt: 'Guatem.', bz: 'Belize',
+  hn: 'Hondur.', sv: 'El Salv.', ni: 'Nicar.', cr: 'C.Rica', pa: 'Panama',
+  cu: 'Cuba', jm: 'Jamaica', ht: 'Haiti', do: 'Domin.R.', bs: 'Bahamas',
+  tt: 'Trinidad',
+};
+
+export const GUESS = {
+  ca: { hint: "Maple syrup drips on my pancakes, and my moose have antlers like big hands!",
+    tease: "My name starts with, Cana... Cana...",
+    capTease: "My capital city starts with, Otta... Otta...",
+    flagHint: "Red and white with a red maple leaf!" },
+  us: { hint: "My Statue of Liberty holds her torch up high, and my school buses are yellow!",
+    tease: "My name starts with, Ame... Ame...",
+    capTease: "My capital city starts with, Washing... Washing...",
+    flagHint: "Stars and stripes — red stripes and white stars on blue!" },
+  mx: { hint: "Tacos and maracas — shake shake! And my old pyramids have big big steps!",
+    tease: "My name starts with, Mex... Mex...",
+    capTease: "My capital city sounds just like me! Mex... Mex...",
+    flagHint: "Green, white and red with an eagle sitting on a cactus!" },
+  gt: { hint: "My volcanoes puff smoke and my quetzal birds have rainbow feathers!",
+    tease: "My name starts with, Guate... Guate...",
+    capTease: "My capital city sounds just like me! Guate... Guate...",
+    flagHint: "Blue, white, blue with a bird in the middle!" },
+  bz: { hint: "I have a giant blue hole in my sea — a big round swimming circle!",
+    tease: "My name starts with, Beli... Beli...",
+    capTease: "My capital city starts with, Belmo... Belmo...",
+    flagHint: "Blue with red stripes and a round badge in the middle!" },
+  hn: { hint: "Sometimes it rains FISH in me — little fish falling from the sky!",
+    tease: "My name starts with, Hondu... Hondu...",
+    capTease: "My capital city starts with, Teguci... Teguci...",
+    flagHint: "Blue and white with five little blue stars!" },
+  sv: { hint: "I am the land of volcanoes, and my pupusas are like little stuffed rotis!",
+    tease: "My name starts with, El Salva... El Salva...",
+    capTease: "My capital city starts with, San Salva... San Salva...",
+    flagHint: "Blue, white, blue with a badge in the middle!" },
+  ni: { hint: "My big lake has SHARKS in it — the only lake sharks in the world!",
+    tease: "My name starts with, Nica... Nica...",
+    capTease: "My capital city starts with, Mana... Mana...",
+    flagHint: "Blue and white with a rainbow in a triangle!" },
+  cr: { hint: "My sloths hang slooowly from the trees — pura vida, happy life!",
+    tease: "My name starts with, Costa... Costa...",
+    capTease: "My capital city starts with, San Ho... San Ho...",
+    flagHint: "Blue and white with a big red stripe!" },
+  pa: { hint: "Big ships climb my magic water steps to cross from one sea to the other!",
+    tease: "My name starts with, Pana... Pana...",
+    capTease: "My capital city sounds just like me! Pana... Pana...",
+    flagHint: "Red and blue squares with a red and a blue star!" },
+  cu: { hint: "Old rainbow-coloured cars from long ago still drive around in me — vroom!",
+    tease: "My name starts with, Cu... Cu...",
+    capTease: "My capital city starts with, Hava... Hava...",
+    flagHint: "Blue and white stripes with a red triangle and white star!" },
+  jm: { hint: "Reggae music plays in me — one love! And the fastest runner in the world is mine!",
+    tease: "My name starts with, Jamai... Jamai...",
+    capTease: "My capital city starts with, King... King...",
+    flagHint: "Green, yellow and black with a big yellow X!" },
+  ht: { hint: "My paintings have every colour, and a big fortress sits on my mountain!",
+    tease: "My name starts with, Hai... Hai...",
+    capTease: "My capital city starts with, Port-au... Port-au...",
+    flagHint: "Blue and red with a little palm tree badge!" },
+  do: { hint: "Merengue dancing on my beaches — cha cha cha!",
+    tease: "My name starts with, Domini... Domini...",
+    capTease: "My capital city starts with, Santo Do... Santo Do...",
+    flagHint: "Blue and red squares with a white cross!" },
+  bs: { hint: "Little pink pigs go swimming in my blue blue water!",
+    tease: "My name starts with, Baha... Baha...",
+    capTease: "My capital city starts with, Nass... Nass...",
+    flagHint: "Blue and yellow stripes with a black triangle!" },
+  tt: { hint: "My steel drums are made from old barrels — ping ping pong!",
+    tease: "My name starts with, Trini... Trini...",
+    capTease: "My capital city starts with, Port of... Port of...",
+    flagHint: "Red with a black and white slanted stripe!" },
+};
+
+export const VISUALS = {
+  ca: { icons: '🍁🥞🫎', capIcons: '⛸️🏰',
+    capCue: "Ottawa! A castle parliament with a clock tower — and everyone ice-skates on the frozen canal!" },
+  us: { icons: '🗽🚌', capIcons: '🏛️⬜',
+    capCue: "Washington! A big white house where the president lives!" },
+  mx: { icons: '🌮🎉', capIcons: '🦅🌵',
+    capCue: "Mexico City! Built where an eagle sat on a cactus — it's right on the flag!" },
+  gt: { icons: '🌋🦜', capIcons: '🌋🌋',
+    capCue: "Guatemala City! A city sitting between three big volcanoes!" },
+  bz: { icons: '🔵🌊', capIcons: '🌴🏠',
+    capCue: "Belmopan! A tiny capital built fresh and new in the jungle!" },
+  hn: { icons: '🐟🌧️', capIcons: '⛰️😄',
+    capCue: "Tegucigalpa! Say it — Te-goo-si-gal-pa! A city in a bowl of mountains!" },
+  sv: { icons: '🌋🫓', capIcons: '🌋🏠',
+    capCue: "San Salvador! A city living right under a big friendly volcano!" },
+  ni: { icons: '🦈🌊', capIcons: '🌋🌊',
+    capCue: "Managua! A city by a big lake with two volcano islands in it!" },
+  cr: { icons: '🦥🌴', capIcons: '☕⛰️',
+    capCue: "San José! A green city where clouds come down to touch the coffee hills!" },
+  pa: { icons: '🚢🪜', capIcons: '🏙️🚢',
+    capCue: "Panama City! Tall towers watch the big ships go through the canal!" },
+  cu: { icons: '🚗🌈', capIcons: '🎺🚗',
+    capCue: "Havana! Music on every street and pretty old cars everywhere!" },
+  jm: { icons: '🎵🏃', capIcons: '🎵⛰️',
+    capCue: "Kingston! The music city between the mountains and the sea!" },
+  ht: { icons: '🎨🏰', capIcons: '🎨⛰️',
+    capCue: "Port-au-Prince! A colourful city climbing up the hills!" },
+  do: { icons: '💃🏖️', capIcons: '🏛️⭐',
+    capCue: "Santo Domingo! The very first city built in all the Americas!" },
+  bs: { icons: '🐷🌊', capIcons: '🩷⛵',
+    capCue: "Nassau! Pink buildings and boats of every colour!" },
+  tt: { icons: '🥁🎶', capIcons: '🎭✨',
+    capCue: "Port of Spain! Carnival! Feathers, sparkles and dancing everywhere!" },
+};
+
+export const LEVEL_PREFIX = 'level_na_';
+export const ALL_DONE_CLIP = 'all_done_namerica';

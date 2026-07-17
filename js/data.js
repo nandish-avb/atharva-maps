@@ -580,6 +580,9 @@ export const UI_AUDIO = {
   all_done: "Wow! You finished the whole map of Europe! You are a champion!",
   all_done_asia: "Wow! You finished the whole map of Asia! You are a champion!",
   all_done_africa: "Wow! You finished the whole map of Africa! You are a champion!",
+  all_done_namerica: "Wow! You finished the whole map of North America! You are a champion!",
+  all_done_samerica: "Wow! You finished the whole map of South America! You are a champion!",
+  all_done_oceania: "Wow! You finished the whole map of Oceania! You are a champion!",
   flag_prompt: "Look at this flag! Which country does it belong to? Tap it!",
   // --- Guess role-play ---
   guess_who: "Guess guess! Kaun hoon main? Who am I?",

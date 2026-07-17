@@ -5,6 +5,12 @@ import * as MAP_AS from './map-asia.js';
 import * as DATA_AS from './data-asia.js';
 import * as MAP_AF from './map-africa.js';
 import * as DATA_AF from './data-africa.js';
+import * as MAP_NA from './map-namerica.js';
+import * as DATA_NA from './data-namerica.js';
+import * as MAP_SA from './map-samerica.js';
+import * as DATA_SA from './data-samerica.js';
+import * as MAP_OC from './map-oceania.js';
+import * as DATA_OC from './data-oceania.js';
 
 // Split an emoji string into whole emoji (handles 🧜‍♀️-style joined ones).
 const graphemes = s => typeof Intl.Segmenter !== 'undefined'
@@ -19,6 +25,9 @@ const CONTINENTS = {
   europe: { label: 'Europe', map: MAP_EU, data: DATA_EU },
   asia: { label: 'Asia', map: MAP_AS, data: DATA_AS },
   africa: { label: 'Africa', map: MAP_AF, data: DATA_AF },
+  namerica: { label: 'North America', map: MAP_NA, data: DATA_NA },
+  samerica: { label: 'South America', map: MAP_SA, data: DATA_SA },
+  oceania: { label: 'Oceania', map: MAP_OC, data: DATA_OC },
 };
 const CONT_KEY = 'atharva-continent';
 let continent = localStorage.getItem(CONT_KEY);

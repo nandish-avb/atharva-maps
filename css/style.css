@@ -378,26 +378,29 @@ body.nolabels .label { display: none; }
 .start-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #c78f00; }
 #cont-row {
   display: flex;
-  gap: 14px;
+  flex-wrap: wrap;
+  gap: 10px;
   justify-content: center;
-  margin-bottom: 20px;
+  max-width: 340px;
+  margin: 0 auto 20px;
 }
 .cont-btn {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 2px;
+  width: 96px;
   font-family: var(--font);
-  font-size: 30px;
+  font-size: 28px;
   font-weight: bold;
   color: #14335c;
   background: rgba(255, 255, 255, .82);
   border: 3px solid transparent;
   border-radius: 18px;
-  padding: 10px 20px;
+  padding: 8px 4px;
   cursor: pointer;
 }
-.cont-btn span { font-size: 14px; }
+.cont-btn span { font-size: 13px; }
 .cont-btn.active {
   border-color: #ffd026;
   background: #fff;
