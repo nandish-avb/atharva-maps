@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#1a6fc9">
-<title>Atharva's World — Europe</title>
+<title>Atharva's World — Map Puzzles</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/icon.svg">
@@ -100,6 +100,7 @@
       <div id="phase-title">🗺️ Phases</div>
       <div id="phase-grid"></div>
       <div id="phase-actions">
+        <button id="btn-continent" aria-label="Change continent">🌍</button>
         <button id="btn-restart-all">🔄 <span>Restart all</span></button>
         <button id="btn-phases-close">✖</button>
       </div>
@@ -112,6 +113,10 @@
       <div id="start-logo">🌍</div>
       <h1>Atharva's World</h1>
       <div id="start-sub">Europe</div>
+      <div id="cont-row">
+        <button class="cont-btn" data-cont="europe">🏰<span>Europe</span></button>
+        <button class="cont-btn" data-cont="asia">🐘<span>Asia</span></button>
+      </div>
       <button id="btn-continue" class="start-btn">▶️ <span>Play</span></button>
       <button id="btn-startover" class="start-btn secondary hidden">🔄 <span>Start from beginning</span></button>
     </div>

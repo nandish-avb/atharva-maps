@@ -1,4 +1,4 @@
-# Atharva's World — Europe 🧩🌍
+# Atharva's World — Map Puzzles 🧩🌍
 
 A talking 3D puzzle map for little explorers. Made for a 3-year-old who can't
 read yet: everything is spoken aloud in warm Indian English (with a sprinkle of
@@ -44,7 +44,11 @@ It teaches four things on one dashboard:
   adult; the button toggles them off for a harder game.
 - If the app is open in two windows at once, only the newest one plays sound —
   the other shows a "tap to play here" curtain (this also prevents doubled audio).
-- Europe is split into 7 mini-levels of 5–7 countries (the dots up top).
+- **Two continents**: the start screen picks 🏰 Europe (39 countries, 7 phases)
+  or 🐘 Asia (44 countries, 8 phases — starting with 🐯 Apna Ghar: India and
+  neighbours). Each continent keeps its own separate progress; the 🌍 button in
+  the phase picker returns to the continent choice.
+- Each continent is split into mini-levels of 3–7 countries (the dots up top).
   The map builds up cumulatively across levels, like his physical cut-out map.
 - Progress saves automatically on the device. ⚙️ resets it (asks first).
 

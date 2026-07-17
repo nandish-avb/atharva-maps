@@ -1,6 +1,8 @@
-// Atharva's World — Europe puzzle engine.
-import { MAP_W, MAP_H, SHAPES } from './map-europe.js';
-import { COUNTRIES, LEVELS, UI_AUDIO, VISUALS } from './data.js';
+// Atharva's World — multi-continent puzzle engine.
+import * as MAP_EU from './map-europe.js';
+import * as DATA_EU from './data.js';
+import * as MAP_AS from './map-asia.js';
+import * as DATA_AS from './data-asia.js';
 
 // Split an emoji string into whole emoji (handles 🧜‍♀️-style joined ones).
 const graphemes = s => typeof Intl.Segmenter !== 'undefined'
@@ -10,13 +12,29 @@ const graphemes = s => typeof Intl.Segmenter !== 'undefined'
 const SVGNS = 'http://www.w3.org/2000/svg';
 const $ = id => document.getElementById(id);
 
-/* Short display names so labels fit inside small countries */
-const SHORT = {
-  gb: 'UK', ch: 'Switz.', nl: 'Nethlds.', be: 'Belg.', lu: 'Lux.',
-  cz: 'Czechia', dk: 'Denm.', ee: 'Est.', lv: 'Lat.', lt: 'Lith.',
-  ba: 'Bosnia', mk: 'N.Maced.', me: 'Monten.', si: 'Sloven.', xk: 'Kosovo',
-  hr: 'Croatia', md: 'Moldova', al: 'Alban.',
+/* ================= Continents ================= */
+const CONTINENTS = {
+  europe: { label: 'Europe', map: MAP_EU, data: DATA_EU },
+  asia: { label: 'Asia', map: MAP_AS, data: DATA_AS },
 };
+const CONT_KEY = 'atharva-continent';
+let continent = localStorage.getItem(CONT_KEY);
+if (!CONTINENTS[continent]) continent = 'europe';
+
+// Bound to the active continent by bindContinent()
+let MAP_W, MAP_H, SHAPES, COUNTRIES, LEVELS, VISUALS, SHORT;
+let LEVEL_PREFIX, ALL_DONE_CLIP;
+
+function bindContinent() {
+  const c = CONTINENTS[continent];
+  ({ MAP_W, MAP_H, SHAPES } = c.map);
+  ({ COUNTRIES, LEVELS, VISUALS, LEVEL_PREFIX, ALL_DONE_CLIP } = c.data);
+  SHORT = c.data.SHORT || {};
+  FULL = { x: 0, y: 0, w: MAP_W, h: MAP_H };
+  MIN_W = MAP_W * 0.18;
+  MAX_W = MAP_W * 1.08;
+  view = { ...FULL };
+}
 
 /* ================= Audio ================= */
 const audio = (() => {
@@ -100,7 +118,7 @@ function claimPlayback() {
 }
 
 /* ================= State ================= */
-const SAVE_KEY = 'atharva-maps-europe-v1';
+const saveKey = () => 'atharva-maps-' + continent + '-v1';
 const state = {
   placed: new Set(),
   level: 0,
@@ -114,14 +132,17 @@ const state = {
 
 function save() {
   try {
-    localStorage.setItem(SAVE_KEY, JSON.stringify({
+    localStorage.setItem(saveKey(), JSON.stringify({
       placed: [...state.placed], level: state.level, labels: state.labels,
     }));
   } catch (e) { /* private mode etc. */ }
 }
 function load() {
+  state.placed = new Set();
+  state.level = 0;
+  state.fails = {};
   try {
-    const raw = localStorage.getItem(SAVE_KEY);
+    const raw = localStorage.getItem(saveKey());
     if (!raw) return;
     const d = JSON.parse(raw);
     state.placed = new Set(d.placed || []);
@@ -135,11 +156,13 @@ const levelCcs = () => LEVELS[state.level].ccs;
 /* ================= Board ================= */
 const board = $('board');
 const boardWrap = $('board-wrap');
-const paths = {};    // cc -> <path>
-const markers = {};  // cc -> tiny <circle> at slot centroid (for screen positions)
-const labels = {};   // cc -> <text>
+let paths = {};    // cc -> <path>
+let markers = {};  // cc -> tiny <circle> at slot centroid (for screen positions)
+let labels = {};   // cc -> <text>
 
 function buildBoard() {
+  board.innerHTML = '';
+  paths = {}; markers = {}; labels = {};
   for (const [cc, s] of Object.entries(SHAPES)) {
     const p = document.createElementNS(SVGNS, 'path');
     p.setAttribute('d', s.d);
@@ -202,11 +225,10 @@ function slotScreenPos(cc) {
   return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
 }
 
-/* ================= View (zoom / pan camera) ================= */
-const FULL = { x: 0, y: 0, w: MAP_W, h: MAP_H };
-const MIN_W = MAP_W * 0.18;   // max zoom-in ≈ 5.5x
-const MAX_W = MAP_W * 1.08;
-let view = { ...FULL };
+/* ================= View (zoom / pan camera) =================
+   FULL / MIN_W / MAX_W / view are set per continent by bindContinent(). */
+let FULL, MIN_W, MAX_W;   // MIN_W: max zoom-in ≈ 5.5x
+let view = null;
 let viewAnim = null;
 
 function applyView() {
@@ -499,7 +521,7 @@ function levelComplete() {
   const isLast = state.level >= LEVELS.length - 1;
   $('celebrate').classList.remove('hidden');
   bigConfetti();
-  audio.speak(isLast ? 'all_done' : 'level_done');
+  audio.speak(isLast ? ALL_DONE_CLIP : 'level_done');
   clearTimeout(celebTimer);
   celebTimer = setTimeout(endCelebrate, isLast ? 4200 : 2600);
 }
@@ -1150,8 +1172,8 @@ function selectPhase(i) {
   buildTray();
   updateLevelDots();
   setView(fitCcs(levelCcs()));
-  audio.speak(['level_' + (i + 1)]);
-  state.lastSpoken = ['level_' + (i + 1)];
+  audio.speak([LEVEL_PREFIX + (i + 1)]);
+  state.lastSpoken = [LEVEL_PREFIX + (i + 1)];
 }
 
 // Restart needs two taps within 3.5s so little fingers can't wipe progress.
@@ -1179,6 +1201,13 @@ $('btn-restart-all').addEventListener('click', () => {
   }
 });
 $('btn-phases-close').addEventListener('click', closePhases);
+$('btn-continent').addEventListener('click', () => {
+  // Back to the start screen to switch continent or restart.
+  closePhases();
+  closeRolePlay(true);
+  updateStartButtons();
+  $('start-screen').classList.remove('hidden');
+});
 
 $('btn-gear').addEventListener('click', () => { audio.unlock(); openPhases(); });
 $('level-dots').addEventListener('click', () => { audio.unlock(); openPhases(); });
@@ -1197,35 +1226,62 @@ $('curtain').addEventListener('pointerdown', () => {
 });
 
 /* ================= Boot ================= */
-load();
-buildBoard();
-applyView();
-refreshBoard();
-buildTray();
-updateLevelDots();
-fitBoard();
-setView(fitCcs(levelCcs()), false);
-document.body.classList.add('booted');
-claimPlayback();
+function initContinent() {
+  bindContinent();
+  load();
+  buildBoard();
+  applyView();
+  refreshBoard();
+  buildTray();
+  updateLevelDots();
+  fitBoard();
+  setView(fitCcs(levelCcs()), false);
+  updateStartButtons();
+}
 
 window.addEventListener('pointerdown', () => audio.unlock());
 
-/* Start screen: continue where we left off, or start from the beginning. */
-const hasProgress = state.placed.size > 0 || state.level > 0;
-if (hasProgress) {
-  $('btn-continue').querySelector('span').textContent = 'Continue';
-  $('btn-startover').classList.remove('hidden');
+/* Start screen: pick continent, continue where we left off, or start fresh. */
+function updateStartButtons() {
+  const has = state.placed.size > 0 || state.level > 0;
+  $('btn-continue').querySelector('span').textContent = has ? 'Continue' : 'Play';
+  $('btn-startover').classList.toggle('hidden', !has);
+  $('start-sub').textContent = CONTINENTS[continent].label;
+  document.querySelectorAll('.cont-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.cont === continent));
 }
 
 function startGame(fresh) {
   audio.unlock();
   claimPlayback();
+  const had = state.placed.size > 0 || state.level > 0;
   if (fresh) resetProgress();
   $('start-screen').classList.add('hidden');
-  const clip = fresh ? 'fresh_start' : (hasProgress ? 'welcome_back' : 'welcome');
+  const clip = fresh ? 'fresh_start' : (had ? 'welcome_back' : 'welcome');
   audio.speak(clip);
   state.lastSpoken = [clip];
   setView(fitCcs(levelCcs()));
 }
 $('btn-continue').addEventListener('click', () => startGame(false));
 $('btn-startover').addEventListener('click', () => startGame(true));
+
+document.querySelectorAll('.cont-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    if (continent === b.dataset.cont) return;
+    continent = b.dataset.cont;
+    try { localStorage.setItem(CONT_KEY, continent); } catch (e) { /* ok */ }
+    closeRolePlay(true);
+    clearTimeout(quizTimer);
+    state.mode = 'puzzle';
+    document.querySelectorAll('.mode-btn[data-mode]').forEach(x =>
+      x.classList.toggle('active', x.dataset.mode === 'puzzle'));
+    tray.style.display = '';
+    $('quiz-card').classList.add('hidden');
+    $('banner').classList.add('hidden');
+    initContinent();
+  });
+});
+
+initContinent();
+document.body.classList.add('booted');
+claimPlayback();

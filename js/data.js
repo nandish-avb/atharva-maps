@@ -223,6 +223,18 @@ export const LEVELS = [
   { name: 'The Balkan Buddies', emoji: '🦅', ccs: ['sk', 'si', 'ba', 'me', 'al', 'mk', 'xk'] },
 ];
 
+/* Short display names so labels fit inside small countries */
+export const SHORT = {
+  gb: 'UK', ch: 'Switz.', nl: 'Nethlds.', be: 'Belg.', lu: 'Lux.',
+  cz: 'Czechia', dk: 'Denm.', ee: 'Est.', lv: 'Lat.', lt: 'Lith.',
+  ba: 'Bosnia', mk: 'N.Maced.', me: 'Monten.', si: 'Sloven.', xk: 'Kosovo',
+  hr: 'Croatia', md: 'Moldova', al: 'Alban.',
+};
+
+// Continent-level clips
+export const LEVEL_PREFIX = 'level_';
+export const ALL_DONE_CLIP = 'all_done';
+
 // Guess-game content. Per country:
 //   hint     — the memory cue WITHOUT the country name (child must recall it)
 //   tease    — first-syllable teaser for the name
@@ -566,6 +578,7 @@ export const UI_AUDIO = {
   try_again_2: "Almost! Try once more!",
   level_done: "Hooray! Level complete! Clap clap clap!",
   all_done: "Wow! You finished the whole map of Europe! You are a champion!",
+  all_done_asia: "Wow! You finished the whole map of Asia! You are a champion!",
   flag_prompt: "Look at this flag! Which country does it belong to? Tap it!",
   // --- Guess role-play ---
   guess_who: "Guess guess! Kaun hoon main? Who am I?",
